@@ -1,11 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends 'layout.html' %}
+
+{% block name %}
+    Admin Dashboard
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 38px">
+    <div class="container-fluid">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/login">Login</a>
+        <a class="nav-link" href="/sign-up-customer">Sign Up for Customer</a>
+        <a class="nav-link" href="/sign-up-serviceprovider">Sign Up for Professional</a>
+      </div>
+      <span class="navbar-text ms-auto">
+        <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
+      </span>
+    </div>
+  </nav>
+
+    <div class="container">
+        <div style="height:fit-content">
+            <h3>Services Provided By Us</h3>
+            <div class="row">
+            {% for service in services %}
+            <div class="col-sm-3">
+            <div class="card" style="width: 18rem;">
+                <img src="https://picsum.photos/200" class="card-img-top" alt="imagecantbeloaded.jpg">
+                <div class="card-body">
+                  <h5 class="card-title" value="{{ service.s_id }}">{{ service.s_name }}</h5>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+
+{% endblock %}
