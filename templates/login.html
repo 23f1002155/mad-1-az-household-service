@@ -1,35 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-</head>
-<body>
-  <div class="my_header">
-    <h2 align="left"><a href="/">HomeHelpr</a></h>
-    <div class="my-header-buttons" align="right">
-      <button class="my_buttons"><a href="/sign-up-customer">Sign-Up as Customer</a></button>
-      <button class="my_buttons"><a href="/sign-up-serviceprovider">Sign-Up as Serviceprovider</a></button>
-    </div>
-    <div class="my_body">
-      <div align="center">
-        <form action="" method="post" class="my_forms">
-          <div class="my_form_group">
-            <label for="username">Username</label>
-            <input type="text" placeholder="Username" name="username">
-          </div>
-          <div class="my_form_group">
-            <label for="password">Password</label>
-            <input type="password" placeholder="Password" name="password">
-          </div>
-          <div class="my_form_group">
-            <input type="submit" value="Login">
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
+{% extends 'layout.html' %}
 
+{% block name %}
+    Login
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 38px">
+  <div class="container-fluid">
+    <div class="navbar-nav">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/sign-up-customer">Sign Up for Customer</a>
+      <a class="nav-link" href="/sign-up-serviceprovider">Sign Up for Professional</a>
+    </div>
+    <span class="navbar-text ms-auto">
+      <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
+    </span>
+  </div>
+</nav>
+
+<div class="container" style="height: fit-content;">
+
+  <div class="w-75" style="margin: 200px;">
+    <div ><h1>Login</h1></div>
+    <form action="/login" method="POST">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username or Email</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

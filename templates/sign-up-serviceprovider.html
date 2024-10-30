@@ -1,52 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
-  <div id = "header" name = 'home_header'>
-  <div>
-    <a href="/"><b>HomeHelpr</b></a>
+{% extends 'layout.html' %}
 
-  </div>
+{% block name %}
+    Sign Up for Professional
+{% endblock %}
 
-    <div >
-        <a href = '/login'><b>Login</b></a>
-        <a href = '/sign-up-customer'><b>Sign Up as Customer</b></a>
+{% block content %}
+<nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 38px">
+  <div class="container-fluid">
+    <div class="navbar-nav">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/login">Login</a>
+      <a class="nav-link" href="/sign-up-customer">Sign Up for Customer</a>
     </div>
+    <span class="navbar-text ms-auto">
+      <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
+    </span>
   </div>
-  <div align="center">
-    <div id = "main-body" name = 'home_main'>
-        <div ><b>Login to HomeHelpr</b></div>
-      <form method = "POST", id = "signup-form-customer">
-        <div>
-          <label >Email-ID: </label>
-          <input type="text" name = "u_email" placeholder="abc@example.com"  required/><br>
-        </div>
-        <div>
-          <label >Name: </label>
-          <input type="text" name = "u_name" placeholder = "ABC"  required/><br>
-        </div>
-        <div>
-          <label >Password: </label>
-          <input type="password" name="u_password" placeholder = "Enter your password" required/><br>
-        </div>
-        <div>
-          <label >Address: </label>
-          <input type="text" name = "u_address"  required/><br>
-        </div>
-        <div>
-          <label >Pincode: </label>
-          <input type="text" name = "u_pincode"  required/><br>
-        </div>
-        <div>
-          <input type="submit" name = "signup-cust" value = "Register" />
-        </div>
-      </form>
+</nav>
+
+<div class="container" style="height:fit-content">
+
+  <div class="w-75" style="margin: 200px;">
+    <div ><h1>Sign Up as Professional</h1></div>
+    <form class="row g-3" method="POST">
+      <div class="col-md-6">
+        <label for="inputName" class="form-label">UserName</label>
+        <input type="text" class="form-control" name = "inputName" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputEmail4" class="form-label">Email</label>
+        <input type="email" class="form-control" name="inputEmail4" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputPassword4" class="form-label">Password</label>
+        <input type="password" class="form-control" name="inputPassword4" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputPassword4" class="form-label">ConfirmPassword</label>
+        <input type="password" class="form-control" name="inputConfirmPassword4" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputPhone" class="form-label">Phone</label>
+        <input type="text" class="form-control" name="inputPhone" required>
+      </div>
+      <div class="col-6">
+        <label for="inputService" class="form-label">Service</label>
+        <select id="inputService" class="form-select" name="inputService" required>
+          <option selected>Choose...</option>
+          {% for service in services %}
+            <option value="{{ service.s_id }}"> {{ service.s_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="inputExperience" class="form-label">Experience(In Years)</label>
+        <input type="text" class="form-control" name="inputExperience" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputRate" class="form-label">Rate</label>
+        <input type="text" class="form-control" name="inputRate" required>
+      </div>
+      <div class="col-12">
+        <label for="inputServiceDescription" class="form-label">Service Description</label>
+        <textarea class="form-control" name="inputServiceDescription" required></textarea>
+      </div>
+      <div class="col-12">
+        <label for="inputAddress" class="form-label">Address</label>
+        <textarea class="form-control" name="inputAddress" placeholder="1234 Main St" required></textarea>
+      </div>
+      <div class="col-md-6">
+        <label for="inputCity" class="form-label">City</label>
+        <input type="text" class="form-control" name="inputCity" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputZip" class="form-label">Zip</label>
+        <input type="text" class="form-control" name="inputZip" required>
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </div>
+    </form>
+  </div>
 
 
-    </div>
-  </div>
-</body>
-</html>
+</div>
+{% endblock %}

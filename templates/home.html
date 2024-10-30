@@ -1,26 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-</head>
-<body>
-    <div id = "header" name = 'home_header'>
-        <a href = '/login'><b>Login</b></a>
-        <a href = '/sign-up-customer'><b>Sign Up as Customer</b></a>
-        <a href = '/sign-up-serviceprovider'><b>Sign Up as Professional</b></a>
+{% extends 'layout.html' %}
 
+{% block name %}
+    Sign Up for Professional
+{% endblock %}
+
+{% block content %}
+  <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 38px">
+    <div class="container-fluid">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/login">Login</a>
+        <a class="nav-link" href="/sign-up-customer">Sign Up for Customer</a>
+        <a class="nav-link" href="/sign-up-serviceprovider">Sign Up for Professional</a>
+      </div>
+      <span class="navbar-text ms-auto">
+        <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
+      </span>
     </div>
-    <div id = "main-body" name = 'home_main'>
-        <b>This is the main body for description of the services</b>
+  </nav>
 
-    </div>
-    <div id = "footer" name = 'home_footer'>
-        <b>Contact Us:</b><br>
-        Phone No:- +91-9876543210<br>
-        Email-us :- <a href="mailto:23f1002155@ds.study.iitm.ac.in"><b>23f1002155@ds.study.iitm.ac.in</b></a><br>
+    <div class="container">
+        <div style="height:fit-content">
+            <h3>Services Provided By Us</h3>
+            <div class="row">
+            {% for service in services %}
+            <div class="col-sm-3">
+            <div class="card" style="width: 18rem;">
+                <img src="https://picsum.photos/200" class="card-img-top" alt="imagecantbeloaded.jpg">
+                <div class="card-body">
+                  <h5 class="card-title" value="{{ service.s_id }}">{{ service.s_name }}</h5>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
 
-    </div>
-
-</body>
-</html>
+{% endblock %}

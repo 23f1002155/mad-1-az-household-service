@@ -8,7 +8,8 @@ my_blueprint = Blueprint('main', __name__)
 
 @my_blueprint.route("/", methods = ["GET", "POST"])
 def home():
-    return render_template("home.html")
+    services = Service.query.all()
+    return render_template("home.html", services = services)
 
 @my_blueprint.route("/login", methods = ["GET", "POST"])
 def login():
@@ -20,4 +21,9 @@ def sign_up_customer():
 
 @my_blueprint.route("/sign-up-serviceprovider", methods = ["GET", "POST"])
 def sign_up_serviceprovider():
-    return render_template("sign-up-serviceprovider.html")
+    if request.method == "GET":
+        services = Service.query.all()
+        return render_template("sign-up-serviceprovider.html", services = services)
+    elif request.method == "POST":
+        
+        return render_template("sign-up-serviceprovider.html")
