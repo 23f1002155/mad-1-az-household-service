@@ -14,9 +14,13 @@ class Role(db.Model):
     role_id = db.Column(db.Integer, primary_key = True)
     role = db.Column(db.String, nullable = False, unique = True)
 
-    
-'''
-class Customer(db.Model)
-    __tablename__ = "customer_data"
+
+
+class Customer(db.Model):
+    __tablename__ = "customer_database"
     c_id = db.Column(db.Integer, primary_key = True)
-'''
+    c_name = db.Column(db.String, nullable = False)
+    c_email = db.Column(db.String, nullable = False)
+    c_city = db.Column(db.String, nullable = False)
+    c_pincode = db.Column(db.Integer, nullable = False)
+    c_user_id = db.Column(db.Integer, foreign_key = True)
