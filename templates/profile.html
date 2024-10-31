@@ -1,0 +1,116 @@
+{% extends 'layout2.html' %}
+{% block name %}
+    Profile Page
+{% endblock %}
+{% block content %}
+<b><h1>Hello {{ user.u_name }}</h1></b>
+{% include 'flashmessage.html' %}
+    <div class="container">
+        <form class="row g-3" method="POST" action="">
+            {% if user.u_role == 0 %}
+            <div class="form-group">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" class="form-control" name="username" value="{{ user.u_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" name="email" value="{{ user.u_email }}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="current_password" class="form-label">Current Password:</label>
+                <input type="password" class="form-control" name="current_password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password" class="form-label">New Password:</label>
+                <input type="password" class="form-control" name="new_password" required>
+            </div>`
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Confirm Password:</label>
+                <input type="password" class="form-control" name="confirm_password" required>
+            </div>
+            {% endif %}
+            {% if user.u_role == 1 %}
+            <div class="form-group">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" class="form-control" name="username" value="{{ user.u_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" name="email" value="{{ user.u_email }}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="current_password" class="form-label">Current Password:</label>
+                <input type="password" class="form-control" name="current_password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password" class="form-label">New Password:</label>
+                <input type="password" class="form-control" name="new_password" required>
+            </div>`
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Confirm Password:</label>
+                <input type="password" class="form-control" name="confirm_password" required>
+            </div>
+            <div class="form-group">
+                <label for="city" class="form-label">City:</label>
+                <input type="text" class="form-control" name="City" value="{{ c_user.c_city }}" required>
+            </div>
+            <div class="form-group">
+                <label for="pincode" class="form-label">Pincode:</label>
+                <input type="text" class="form-control" name="pincode" value="{{ c_user.c_pincode }}" required>
+            </div>
+            {% elif user.u_role == 2 %}
+            <div class="form-group">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" class="form-control" name="username" value="{{ user.u_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" name="email" value="{{ user.u_email }}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="current_password" class="form-label">Current Password:</label>
+                <input type="password" class="form-control" name="current_password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password" class="form-label">New Password:</label>
+                <input type="password" class="form-control" name="new_password" required>
+            </div>`
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Confirm Password:</label>
+                <input type="password" class="form-control" name="confirm_password" required>
+            </div>
+            <div class="col-md-6">
+                <label for="inputPhone" class="form-label">Phone</label>
+                <input type="text" class="form-control" name="inputPhone" value="{{ p_user.p_contact_number }}" required>
+              </div>
+              <div class="col-6">
+                <label for="inputService" class="form-label">Service</label>
+                <select id="inputService" class="form-select" name="inputService" disabled>
+                  <option value="{{ p_service.s_id }}" selected> {{ p_service.s_name }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="inputExperience" class="form-label">Experience(In Years)</label>
+                <input type="text" class="form-control" name="inputExperience" value="{{ p_user.p_experience }}" disabled>
+              </div>
+              <div class="col-12">
+                <label for="inputAddress" class="form-label">Address</label>
+                <textarea class="form-control" name="inputAddress" value="{{ p_user.p_address }}" required></textarea>
+              </div>
+              <div class="col-md-6">
+                <label for="inputCity" class="form-label">City</label>
+                <input type="text" class="form-control" name="inputCity" value="{{ p_user.p_city }}" required>
+              </div>
+              <div class="col-md-6">
+                <label for="inputPincode" class="form-label">Pincode</label>
+                <input type="text" class="form-control" name="inputPincode" value="{{ p_user.p_pincode }}" required>
+              </div>
+                
+           
+                
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+        
+{% endblock %}

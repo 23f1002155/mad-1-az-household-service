@@ -22,21 +22,7 @@
 
   <div class="w-75" style="margin: 200px;">
     <div ><h1>Login</h1></div>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-              {% if "Success" in message %}
-                <div class="alert alert-success" role="alert">
-                  {{ message }}
-                </div>
-              {% else %}
-                <div class="alert alert-danger" role="alert">
-                  {{ message }}
-                </div>
-              {% endif %}
-        {% endfor %}
-      {% endif %}
-{% endwith %}
+      {% include 'flashmessage.html'   %}
     <form action="/login" method="POST">
       <div class="mb-3">
         <label for="username" class="form-label">Username or Email</label>
@@ -46,7 +32,7 @@
         <label for="password" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" name="password" required>
       </div>
-      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="submit" class="btn btn-outline-success">Login</button>
     </form>
   </div>
 </div>

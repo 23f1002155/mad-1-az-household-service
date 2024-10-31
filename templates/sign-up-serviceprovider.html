@@ -22,21 +22,7 @@
 
   <div class="w-75" style="margin: 200px;">
     <div ><h1>Sign Up as Professional</h1></div>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                {% if "Success" in message %}
-                  <div class="alert alert-success" role="alert">
-                    {{ message }}
-                  </div>
-                {% else %}
-                  <div class="alert alert-danger" role="alert">
-                    {{ message }}
-                  </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    {% include 'flashmessage.html'   %}
     <form class="row g-3" method="POST">
       <div class="col-md-6">
         <label for="inputName" class="form-label">UserName</label>
@@ -71,14 +57,6 @@
         <label for="inputExperience" class="form-label">Experience(In Years)</label>
         <input type="text" class="form-control" name="inputExperience" required>
       </div>
-      <div class="col-md-6">
-        <label for="inputRate" class="form-label">Rate</label>
-        <input type="text" class="form-control" name="inputRate" required>
-      </div>
-      <div class="col-12">
-        <label for="inputServiceDescription" class="form-label">Service Description</label>
-        <textarea class="form-control" name="inputServiceDescription" required></textarea>
-      </div>
       <div class="col-12">
         <label for="inputAddress" class="form-label">Address</label>
         <textarea class="form-control" name="inputAddress" placeholder="1234 Main St" required></textarea>
@@ -92,7 +70,7 @@
         <input type="text" class="form-control" name="inputZip" required>
       </div>
       <div class="col-12">
-        <button type="submit" class="btn btn-primary">Sign in</button>
+        <button type="submit" class="btn btn-outline-success">Sign in</button>
       </div>
     </form>
   </div>

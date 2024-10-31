@@ -50,7 +50,9 @@ class Service(db.Model):
     __tablename__ = "service_database"
     s_id = db.Column(db.Integer, primary_key = True)
     s_name = db.Column(db.String, nullable = False)
-
+    s_rate = db.Column(db.Integer, nullable = False)
+    s_description = db.Column(db.String, nullable = False)
+    s_time_required = db.Column(db.REAL, nullable = False)
 
 class ServiceRequest(db.Model):
     __tablename__ = "service_request_database"
@@ -73,16 +75,3 @@ class ServiceFeedback(db.Model):
     sf_feedback = db.Column(db.String, nullable = False)
 
     service_request = db.relationship("ServiceRequest", backref = "service_feedback_database", lazy = True)
-
-class ServiceDetail(db.Model):
-    __tablename__ = "service_detail_database"
-    sd_id = db.Column(db.Integer, primary_key = True)
-    sd_service_id = db.Column(db.Integer, db.ForeignKey('service_database.s_id'))
-    sd_service_provider_id = db.Column(db.Integer, db.ForeignKey('service_provider_database.p_id'))
-    sd_service_rate = db.Column(db.Integer, nullable = False)
-    sd_description = db.Column(db.String, nullable = False)
-
-    service = db.relationship("Service", backref = "service_rate_database", lazy = True)
-    service_provider = db.relationship("ServiceProvider", backref = "service_rate_database", lazy = True)
-
-
