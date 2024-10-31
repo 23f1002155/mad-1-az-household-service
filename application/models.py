@@ -28,6 +28,7 @@ class Customer(db.Model):
     c_city = db.Column(db.String, nullable = False)
     c_pincode = db.Column(db.Integer, nullable = False)
     c_user_id = db.Column(db.Integer, db.ForeignKey('user_database.u_id'))
+    c_blocked = db.Column(db.Boolean, nullable = False)
 
     user = db.relationship("User", backref = "customer_database", lazy = True)
 
@@ -42,6 +43,8 @@ class ServiceProvider(db.Model):
     p_pincode = db.Column(db.Integer, nullable = False)
     p_user_id = db.Column(db.Integer, db.ForeignKey('user_database.u_id'))
     p_service_id = db.Column(db.Integer, db.ForeignKey('service_database.s_id'))
+    p_approved = db.Column(db.Boolean, nullable = False)
+    p_blocked = db.Column(db.Boolean, nullable = False)
 
     user = db.relationship("User", backref = "service_provider_database", lazy = True)
     service = db.relationship("Service", backref = "service_provider_database", lazy = True)

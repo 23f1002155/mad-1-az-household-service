@@ -1,0 +1,31 @@
+{% extends 'layout2.html' %}
+{% block name %}
+    Add Service
+{% endblock %}
+{% block content %}
+{% include 'flashmessage.html'   %} 
+<div class="container" style="height: fit-content;">
+    <h1>Add Service</h1>
+    <div class="col-md-12">
+        <form class="row g-3" method = "POST" action="">
+            <div class="form-group">
+                <label for="s_name" class="form-label">Service Name:</label>
+                <input type="text" class="form-control" name="s_name" required>
+            </div>
+            <div class="form-group">
+                <label for="s_description" class="form-label">Description:</label>
+                <input type="text" class="form-control" name="s_description" required>
+            </div>
+            <div class="form-group">
+                <label for="s_rate" class="form-label">Rate:</label>
+                <input type="text" class="form-control" name="s_rate" required>
+            </div>
+            <div class="form-group">
+                <label for="s_time_required" class="form-label">Time Required:</label>
+                <input type="text" class="form-control" name="s_time_required" required>
+            </div>
+            <button type="submit" class="btn btn-outline-success">Add</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

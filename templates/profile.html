@@ -8,15 +8,15 @@
     <div class="container">
         <form class="row g-3" method="POST" action="">
             {% if user.u_role == 0 %}
-            <div class="form-group">
+            <div class="form-group col-md-6">
                 <label for="username" class="form-label">Username:</label>
                 <input type="text" class="form-control" name="username" value="{{ user.u_name }}" required>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-6">
                 <label for="email" class="form-label">Email:</label>
                 <input type="email" class="form-control" name="email" value="{{ user.u_email }}" disabled>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-6">
                 <label for="current_password" class="form-label">Current Password:</label>
                 <input type="password" class="form-control" name="current_password" required>
             </div>

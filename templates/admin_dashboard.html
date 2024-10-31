@@ -6,5 +6,87 @@
 
 {% block content %}
 {% include 'flashmessage.html'   %}
+<div class="container" style="height: fit-content;">
+    <h1>Admin Dashboard</h1>
+    <div class="col-md-12">
+        <div class="group-item">
+        <h4>Services</h4><a href="/service/add" class="btn btn-outline-success">Add Service</a>
+        
+        <table class="table table-bordered table-hover">
+            <thead class="table-success">
+              <tr class="table-success">
+                <th scope="col" style="text-align: center; vertical-align:middle">Sequence Number</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Name</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Description</th>
+                <th scope="col" style="text-align:center; vertical-align:middle">Rate(per hour)</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Time Required</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for service in services %}
+                <tr>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                    <td scope="col" style="text-align: center; vertical-align:middle"><b>{{ service.s_name }}</b></td>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ service.s_description }}</td>
+                    <td scope="col" style="text-align: center; vertical-align:middle">&#8377 {{ service.s_rate }}</td>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ service.s_time_required }}</td>
+                    <td scope="col"  style="text-align: center; vertical-align:middle">
+                        <a href="/service/{{ service.s_id }}/edit" class="btn btn-outline-success">Edit</a>
+                        <a href="/service/{{ service.s_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+            
+        </div>
+        <div class="group-item">   
+        <h4>Professional</h4>
+        <table class="table table-bordered table-hover">
+            <thead class="table-success">
+              <tr class="table-success">
+                <th scope="col" style="text-align: center; vertical-align:middle">Sequence Number</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Name</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Email</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Phone</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Service</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">City</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Approved</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Blocked</th>
+                <th scope="col" style="text-align: center; vertical-align:middle">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for service_provider in services_providers %}
+                <tr>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                    <td scope="col" style="text-align: center; vertical-align:middle"><b><a href="/service_provider/{{ service_provider.p_id }}" style="text-decoration:none">{{ service_provider.p_name }}</a></b></td>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ service_provider.p_email }}</td>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ service_provider.p_phone }}</td>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ service_provider.service.s_name }}</td>
+                    <td scope="col" style="text-align: center; vertical-align:middle">{{ service_provider.p_city }}</td>
+                    <td scope="col"  style="text-align: center; vertical-align:middle">{{ service_provider.p_approved }}</td>
+                    <td scope="col"  style="text-align: center; vertical-align:middle">{{ service_provider.p_blocked }}</td> 
+                    <td scope="col"  style="text-align: center; vertical-align:middle">
+                        <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success">Approve</a>
+                        <a href="/service_provider/{{ service_provider.p_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                        {% if service_provider.p_blocked == False %}
+                        <a href="/service_provider/{{ service_provider.p_id }}/block" class="btn btn-outline-info">Block</a>
+                        {% else %}
+                        <a href="/service_provider/{{ service_provider.p_id }}/unblock" class="btn btn-outline-info">Unlock</a> 
+                        {% endif %}
+                        
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
+
+
+

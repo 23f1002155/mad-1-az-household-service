@@ -15,28 +15,32 @@
 
 </head>
 <body style="background-color: rgb(240, 240, 240);">
-    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 38px">
+    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 18px">
         <div class="container-fluid">
           <div class="navbar-nav">
+            <a class="nav-link" href="/profile"><b><h6>Profile</h6></b></a>
             <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
             <a class="nav-link" href="{{ url_for('main.search') }}">Search</a>
             <a class="nav-link" href="{{  url_for('main.summary')}}">Summary</a>
+            
             <a class="btn btn-outline-danger" href="{{ url_for('main.logout')}}">Logout</a>
           </div>
           <span class="navbar-text ms-auto">
-            <a class="nav-link" href="/profile"><b><h3>Profile</h3></b></a>
+            
             <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
           </span>
         </div>
       </nav>
-    {% block content %}
+      {% block content %}
         
     {% endblock %}
+      </body>
+    
     {% include 'footer.html'   %}
-</div>
+
     {% block script %}
         
     {% endblock %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
+
 </html>

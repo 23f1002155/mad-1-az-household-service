@@ -1,0 +1,35 @@
+{% extends 'layout2.html' %}
+{% block name %}
+    Service Provider Profile
+{% endblock %}
+{% block content %}
+{% include 'flashmessage.html'   %}
+<div class="container" style="height: fit-content;">
+    <h1>Professional Profile</h1>
+    <div class="col-md-12">
+        <div class="col-md-6">
+        <h3>Name:</h3> <p>{{ provider.p_name }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Email:</h3> <p>{{ provider.p_email }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Phone:</h3> <p>{{ provider.p_contact_number }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Address:</h3> <p>{{ provider.p_address }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>City:</h3> <p>{{ provider.p_city }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Service Id:</h3> <p>{{ provider.p_service_id }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Service Name:</h3> <p>{{ service.s_name }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Pincode:</h3> <p>{{ provider.p_pincode }}</p>
+    </div>
+
+{% endblock %}

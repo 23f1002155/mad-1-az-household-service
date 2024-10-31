@@ -10,6 +10,8 @@ my_blueprint = Blueprint('main', __name__)
 
 @my_blueprint.route("/", methods = ["GET", "POST"])
 def home():
+    if "user_id" in session:
+        return redirect(url_for("main.dashboard"))
     services = Service.query.all()
     return render_template("home.html", services = services)
 
@@ -33,31 +35,31 @@ def login():
             if user_email:
                 if check_password_hash(user_email.u_passhash, password) and user_email.u_role == 0:
                     session["user_id"] = user_email.u_id
-                    return redirect(url_for("main.admin_dashboard"))
+                    return redirect(url_for("main.dashboard"))
                 
 
                 elif check_password_hash(user_email.u_passhash, password) and user_email.u_role == 1:
                     session["user_id"] = user_email.u_id
-                    return redirect(url_for("main.customer_dashboard"))
+                    return redirect(url_for("main.dashboard"))
                 
 
                 elif check_password_hash(user_email.u_passhash, password) and user_email.u_role == 2:
                     session["user_id"] = user_email.u_id
 
-                    return redirect(url_for("main.service_provider_dashboard"))
+                    return redirect(url_for("main.dashboard"))
                 else:
                     flash("Invalid Password")
                     return redirect(url_for("main.login"))
             elif user:
                 if check_password_hash(user.u_passhash, password) and user.u_role == 0:
                     session["user_id"] = user.u_id
-                    return redirect(url_for("main.admin_dashboard"))
+                    return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 1:
                     session["user_id"] = user.u_id
-                    return redirect(url_for("main.customer_dashboard"))
+                    return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 2:
                     session["user_id"] = user.u_id
-                    return redirect(url_for("main.service_provider_dashboard"))
+                    return redirect(url_for("main.dashboard"))
                 else:
                     flash("Invalid Password")
                     return redirect(url_for("main.login"))
@@ -78,6 +80,7 @@ def sign_up_customer():
         confirm_password = request.form.get("inputConfirmPassword4")
         city = request.form.get("inputCity")
         pincode = request.form.get("inputZip")
+        blocked = False
 
         if not username or not email or not password or not confirm_password or not city or not pincode:
             flash("All fields are required")
@@ -94,7 +97,7 @@ def sign_up_customer():
         else:
             passhash = generate_password_hash(password)
             new_user = User(u_name = username, u_email = email, u_passhash = passhash, u_role = 1)
-            new_customer = Customer(c_name = username, c_email = email, c_city = city, c_pincode = pincode, c_user_id = new_user.u_id)
+            new_customer = Customer(c_name = username, c_email = email, c_city = city, c_pincode = pincode, c_user_id = new_user.u_id, c_blocked = blocked)
             db.session.add(new_user)
             db.session.add(new_customer)
             db.session.commit()
@@ -119,6 +122,8 @@ def sign_up_serviceprovider():
         address = request.form.get("inputAddress")
         city = request.form.get("inputCity")
         pincode = request.form.get("inputZip")
+        approved = False
+        blocked = False
 
         if not username or not email or not password or not confirm_password or not contact_number or not service_id or not experience or not address or not city or not pincode:
             flash("All fields are required")
@@ -138,7 +143,7 @@ def sign_up_serviceprovider():
         
         db.session.add(new_user)
         db.session.commit()
-        new_provider = ServiceProvider(p_name = username, p_email = email, p_contact_number = contact_number, p_experience = experience, p_city = city, p_pincode = pincode, p_user_id = new_user.u_id, p_service_id = service_id)
+        new_provider = ServiceProvider(p_name = username, p_email = email, p_contact_number = contact_number, p_experience = experience, p_city = city, p_pincode = pincode, p_user_id = new_user.u_id, p_service_id = service_id, p_approved = approved, p_blocked = blocked)
         db.session.add(new_provider)
         db.session.commit()
         flash("Account Created Successfully")
@@ -155,27 +160,40 @@ def requires_login(my_fucntion):
         return my_fucntion(*args, **kwargs)
     return main_function
 
-@my_blueprint.route("/admin_dashboard")
+
+
+def requires_admin(my_fucntion):
+    @wraps(my_fucntion)
+    def main_function(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Please Login")
+            return redirect(url_for("main.login"))
+        user = User.query.filter_by(u_id = session["user_id"]).first()
+        if user.u_role != 0:
+            flash("You do not have permission to access this page")
+            return redirect(url_for("main.dashboard"))
+        return my_fucntion(*args, **kwargs)
+    return main_function
+
+@my_blueprint.route("/dashboard")
 @requires_login
-def admin_dashboard():
-    flash("Logged In Successfully as Admin")
-    return render_template("admin_dashboard.html")
+def dashboard():
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 0:
+        services = Service.query.all()
+        services_providers = ServiceProvider.query.all()
+        flash("Logged In Successfully as Admin")
+        return render_template("admin_dashboard.html" , services = services, services_providers = services_providers)
+    elif user.u_role == 1:
+        flash("Logged In Successfully as Customer")
+        return render_template("customer_dashboard.html")
+    elif user.u_role == 2:
+        flash("Logged In Successfully as Professional")
+        return render_template("service_provider_dashboard.html")
 
-    
 
-@my_blueprint.route("/customer_dashboard")
-@requires_login
-def customer_dashboard():
-    flash("Logged In Successfully as Customer")
-    return render_template("customer_dashboard.html")
 
-    
 
-@my_blueprint.route("/service_provider_dashboard")
-@requires_login
-def service_provider_dashboard():
-    flash("Logged In Successfully as Professional")
-    return render_template("service_provider_dashboard.html")
 
 
 @my_blueprint.route("/logout")
@@ -322,4 +340,104 @@ def summary():
     return "Summary Page"
 
 
-    
+@my_blueprint.route("/service/<int:service_id>/edit", methods = ["GET", "POST"])
+@requires_admin
+def edit_service(service_id):
+    service = Service.query.filter_by(s_id = service_id).first()
+    if request.method == "GET":
+        return render_template("edit_service.html", service = service)
+    elif request.method == "POST":
+        s_name = request.form.get("s_name")
+        s_rate = request.form.get("s_rate")
+        s_description = request.form.get("s_description")
+        s_time_required = request.form.get("s_time_required")
+
+        if not s_name or not s_rate or not s_description or not s_time_required:
+            flash("All fields are required")
+            return redirect(url_for("main.edit_service", service_id = service_id))
+        
+        service.s_name = s_name
+        service.s_rate = s_rate
+        service.s_description = s_description
+        service.s_time_required = s_time_required
+        db.session.commit()
+        flash("Service Updated Successfully")
+        return redirect(url_for("main.dashboard"))
+
+
+@my_blueprint.route("/service/<int:service_id>/delete")
+@requires_admin
+def delete_service(service_id):
+    service = Service.query.filter_by(s_id = service_id).first()
+    db.session.delete(service)
+    db.session.commit()
+    flash("Service Deleted Successfully")
+    return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service/add", methods = ["GET", "POST"])
+@requires_admin
+def add_service():
+    if request.method == "GET":
+        return render_template("add_service.html")
+    elif request.method == "POST":
+        s_name = request.form.get("s_name")
+        s_rate = request.form.get("s_rate")
+        s_description = request.form.get("s_description")
+        s_time_required = request.form.get("s_time_required")
+
+        if not s_name or not s_rate or not s_description or not s_time_required:
+            flash("All fields are required")
+            return redirect(url_for("main.add_service"))
+        
+        new_service = Service(s_name = s_name, s_rate = s_rate, s_description = s_description, s_time_required = s_time_required)
+        db.session.add(new_service)
+        db.session.commit()
+        flash("Service Added Successfully")
+        return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_provider/<int:provider_id>/approve")
+@requires_admin
+def approve_service_provider(provider_id):
+    provider = ServiceProvider.query.filter_by(p_id = provider_id).first()
+    provider.p_approved = True
+    db.session.commit()
+    flash("Service Provider Approved Successfully")
+    return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_provider/<int:provider_id>/block")
+@requires_admin
+def block_service_provider(provider_id):
+    provider = ServiceProvider.query.filter_by(p_id = provider_id).first()
+    provider.p_blocked = True
+    db.session.commit()
+    flash("Service Provider Blocked Successfully")
+    return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_provider/<int:provider_id>/unblock")
+@requires_admin
+def unblock_service_provider(provider_id):
+    provider = ServiceProvider.query.filter_by(p_id = provider_id).first()
+    provider.p_blocked = False
+    db.session.commit()
+    flash("Service Provider Unblocked Successfully")
+    return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_provider/<int:provider_id>/delete")
+@requires_admin
+def delete_service_provider(provider_id):
+    provider = ServiceProvider.query.filter_by(p_id = provider_id).first()
+    user = User.query.filter_by(u_id = provider.p_user_id).first()
+    db.session.delete(user)
+    db.session.delete(provider)
+    db.session.commit()
+    flash("Service Provider Deleted Successfully")
+    return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_provider/<int:provider_id>/")
+@requires_admin
+def view_service_provider(provider_id):
+    provider = ServiceProvider.query.filter_by(p_id = provider_id).first()
+    service = Service.query.filter_by(s_id = provider.p_service_id).first()
+    service_requests = ServiceRequest.query.filter_by(sr_provider_id = provider_id).all()
+    service_feedback = ServiceFeedback.query.filter_by(sf_provider_id = service_requests).all()
+    return render_template("service_provider_profile.html", provider = provider, service = service, service_requests = service_requests, service_feedback = service_feedback)
