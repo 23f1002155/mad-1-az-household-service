@@ -9,7 +9,8 @@ class Config():
     SECRET_KEY = os.getenv("SECRET_KEY")
 
 class LocalDevelopmentConfig(Config):
+    SECRET_KEY = os.getenv("SECRET_KEY")
     SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
     SQLALCHEMY_DATABASE_URI = "sqlite:///"+ os.path.join(SQLITE_DB_DIR, "HomeHelpr.sqlite3")
     DEBUG = True
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    

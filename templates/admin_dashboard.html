@@ -20,18 +20,21 @@
 
     <div class="container">
         <div style="height:fit-content">
-            <h3>Services Provided By Us</h3>
-            <div class="row">
-            {% for service in services %}
-            <div class="col-sm-3">
-            <div class="card" style="width: 18rem;">
-                <img src="https://picsum.photos/200" class="card-img-top" alt="imagecantbeloaded.jpg">
-                <div class="card-body">
-                  <h5 class="card-title" value="{{ service.s_id }}">{{ service.s_name }}</h5>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "Success" in message %}
+                      <div class="alert alert-success" role="alert">
+                        {{ message }}
+                      </div>
+                    {% else %}
+                      <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                      </div>
+                    {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
             </div>
         </div>
 

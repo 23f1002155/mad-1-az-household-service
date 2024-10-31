@@ -1,4 +1,6 @@
 from .database import db
+from werkzeug.security import generate_password_hash
+
 
 
 class Role(db.Model):
@@ -82,3 +84,5 @@ class ServiceDetail(db.Model):
 
     service = db.relationship("Service", backref = "service_rate_database", lazy = True)
     service_provider = db.relationship("ServiceProvider", backref = "service_rate_database", lazy = True)
+
+
