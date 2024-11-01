@@ -5,4 +5,78 @@
 {% block content %}
 {% include 'flashmessage.html' %}
 
+<div class="container" style="height: fit-content;">
+    <h1>Professional Dashboard</h1><br><br><br>
+    <h3>Service Requests</h3>
+    <table class="table table-bordered table-hover">
+        <thead class="table-success">
+          <tr>
+                <th>Sequence Number</th>
+                <th>Service Request Id</th>
+                <th>Customer Name</th>
+                <th>Service Request Date and Time</th>
+                <th>Service Address</th>
+                <th>Service City, Pincode</th>
+                <th>Service Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(service_requests|length) %}
+            <tr>
+                {% if services_requests[i].status != "Closed" %}
+                <td>{{ loop.index }}</td>
+                <td>{{ service_requests[i].sr_id }}</td>
+                <td>{{ customers[i].c_name }}</td>
+                <td>{{ service_requests[i].sr_date_time }}</td>
+                <td>{{ customers[i].c_city }}, {{ customers[i].c_pincode }}</td>
+                <td>{{ service_requests[i].sr_status }}</td>
+                <td>
+                    {% if service_providers[i].blocked == True %}
+                    <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-success" >Accept</a>
+                    <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-danger" >Reject</a>
+                    {% else %}
+                    <a href="{{ url_for('main.accept_request', sr_id=service_requests[i].sr_id) }}" class="btn btn-outline-success">Accept</a>
+                    <a href="{{ url_for('main.reject_request', sr_id=service_requests[i].sr_id) }}" class="btn btn-outline-danger">Reject</a>
+                    {% endif %}
+                    
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3>Closed Services</h3>
+    <table class="table table-bordered table-hover">
+        <thead class="table-success">
+          <tr>
+                <th>Sequence Number</th>
+                <th>Service Request Id</th>
+                <th>Customer Name</th>
+                <th>Service Date and Time</th>
+                <th>Service Address</th>
+                <th>Service City, Pincode</th>
+                <th>Service Feedback</th>
+                <th>Service Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(service_requests|length) %}
+            <tr>
+            {% if services_requests[i].status == "Closed" %}
+            <td>{{ loop.index }}</td>
+            <td>{{ service_requests[i].sr_id }}</td>
+            <td>{{ customers[i].c_name }}</td>
+            <td>{{ service_requests[i].sr_date_time }}</td>
+            <td>{{ customers[i].c_city }}, {{ customers[i].c_pincode }}</td>
+            <td>{{ service_requests[i].sr_feedback }}</td>
+            <td>{{ service_requests[i].sr_rating }}</td>
+            {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
 {% endblock %}

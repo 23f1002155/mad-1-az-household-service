@@ -180,6 +180,8 @@ def requires_admin(my_fucntion):
         return my_fucntion(*args, **kwargs)
     return main_function
 
+from datetime import datetime
+
 @my_blueprint.route("/dashboard")
 @requires_login
 def dashboard():
@@ -190,11 +192,15 @@ def dashboard():
         
         return render_template("admin_dashboard.html" , services = services, services_providers = services_providers)
     elif user.u_role == 1:
-        
-        return render_template("customer_dashboard.html")
+        services = Service.query.all()
+        return render_template("customer_dashboard.html", services = services)
     elif user.u_role == 2:
-        
-        return render_template("service_provider_dashboard.html")
+        service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = session["user_id"]).all()
+        customer_ids = {request.sr_customer_id for request in service_requests}
+        customers = Customer.query.filter(Customer.c_id.in_(customer_ids)).all()
+        service_provide_ids = {request.sr_service_provider_id for request in service_requests}
+        service_providers = ServiceProvider.query.filter(ServiceProvider.p_id.in_(service_provide_ids)).all() 
+        return render_template("service_provider_dashboard.html", service_requests = service_requests, customers = customers, service_providers = service_providers)
 
 
 

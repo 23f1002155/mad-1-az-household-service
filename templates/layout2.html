@@ -15,22 +15,31 @@
 
 </head>
 <body style="background-color: rgb(240, 240, 240);">
-    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 18px">
-        <div class="container-fluid">
-          <div class="navbar-nav">
-            <a class="nav-link" href="/profile"><b><h6>Profile</h6></b></a>
-            <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
-            <a class="nav-link" href="{{ url_for('main.search') }}">Search</a>
-            <a class="nav-link" href="{{  url_for('main.summary')}}">Summary</a>
-            
-            <a class="btn btn-outline-danger" href="{{ url_for('main.logout')}}">Logout</a>
-          </div>
-          <span class="navbar-text ms-auto">
-            
-            <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
-          </span>
-        </div>
-      </nav>
+  <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 18px">
+    <div class="container-fluid">
+      <span class="navbar-text">
+      <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
+      </span>
+      <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/profile"><b>Profile</b></a>
+      <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
+      <a class="nav-link" href="{{ url_for('main.search') }}">Search</a>
+      <a class="nav-link" href="{{  url_for('main.summary')}}">Summary</a>
+      <a class="btn btn-outline-light logout-btn" href="{{ url_for('main.logout')}}">Logout</a>
+      </div>
+    </div>
+    </nav>
+    <style>
+      .logout-btn {
+        color: white;
+        border-color: white;
+      }
+      .logout-btn:hover {
+        background-color: red;
+        color: white;
+        border-color: red;
+      }
+    </style>
       {% block content %}
         
     {% endblock %}
