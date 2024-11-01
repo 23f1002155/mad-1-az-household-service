@@ -1,5 +1,5 @@
 from .database import db
-from werkzeug.security import generate_password_hash
+
 
 
 
@@ -39,6 +39,7 @@ class ServiceProvider(db.Model):
     p_email = db.Column(db.String, nullable = False)
     p_contact_number = db.Column(db.Integer, nullable = False)
     p_experience = db.Column(db.Integer, nullable = False)
+    p_address = db.Column(db.String, nullable = False)
     p_city = db.Column(db.String, nullable = False)
     p_pincode = db.Column(db.Integer, nullable = False)
     p_user_id = db.Column(db.Integer, db.ForeignKey('user_database.u_id'))
@@ -76,5 +77,8 @@ class ServiceFeedback(db.Model):
     sf_service_request_id = db.Column(db.Integer, db.ForeignKey('service_request_database.sr_id'))
     sf_rating = db.Column(db.Integer, nullable = False)
     sf_feedback = db.Column(db.String, nullable = False)
+    sf_customer_id = db.Column(db.Integer, db.ForeignKey('customer_database.c_id'))
+    sf_service_provider_id = db.Column(db.Integer, db.ForeignKey("service_provider_database.p_id"))
 
     service_request = db.relationship("ServiceRequest", backref = "service_feedback_database", lazy = True)
+    service_customer = db.relationship("Customer", backref = "service_feedback_database", lazy = True)

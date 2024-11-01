@@ -72,9 +72,9 @@
                         <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success">Approve</a>
                         <a href="/service_provider/{{ service_provider.p_id }}/delete" class="btn btn-outline-danger">Delete</a>
                         {% if service_provider.p_blocked == False %}
-                        <a href="/service_provider/{{ service_provider.p_id }}/block" class="btn btn-outline-info">Block</a>
+                        <a href="/service_provider/{{ service_provider.p_id }}/block" class="btn btn-outline-secondary">Block</a>
                         {% else %}
-                        <a href="/service_provider/{{ service_provider.p_id }}/unblock" class="btn btn-outline-info">Unlock</a> 
+                        <a href="/service_provider/{{ service_provider.p_id }}/unblock" class="btn btn-outline-secondary">Unlock</a> 
                         {% endif %}
                         
                     </td>

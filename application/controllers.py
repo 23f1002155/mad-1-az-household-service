@@ -35,17 +35,19 @@ def login():
             if user_email:
                 if check_password_hash(user_email.u_passhash, password) and user_email.u_role == 0:
                     session["user_id"] = user_email.u_id
+                    flash("Loggen In Successfully as Admin")
                     return redirect(url_for("main.dashboard"))
                 
 
                 elif check_password_hash(user_email.u_passhash, password) and user_email.u_role == 1:
                     session["user_id"] = user_email.u_id
+                    flash("Loggen In Successfully as Customer")
                     return redirect(url_for("main.dashboard"))
                 
 
                 elif check_password_hash(user_email.u_passhash, password) and user_email.u_role == 2:
                     session["user_id"] = user_email.u_id
-
+                    flash("Loggen In Successfully as Professional")
                     return redirect(url_for("main.dashboard"))
                 else:
                     flash("Invalid Password")
@@ -53,12 +55,15 @@ def login():
             elif user:
                 if check_password_hash(user.u_passhash, password) and user.u_role == 0:
                     session["user_id"] = user.u_id
+                    flash("Loggen In Successfully as Admin")
                     return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 1:
                     session["user_id"] = user.u_id
+                    flash("Loggen In Successfully as Customer")
                     return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 2:
                     session["user_id"] = user.u_id
+                    flash("Loggen In Successfully as Professional")
                     return redirect(url_for("main.dashboard"))
                 else:
                     flash("Invalid Password")
@@ -182,13 +187,13 @@ def dashboard():
     if user.u_role == 0:
         services = Service.query.all()
         services_providers = ServiceProvider.query.all()
-        flash("Logged In Successfully as Admin")
+        
         return render_template("admin_dashboard.html" , services = services, services_providers = services_providers)
     elif user.u_role == 1:
-        flash("Logged In Successfully as Customer")
+        
         return render_template("customer_dashboard.html")
     elif user.u_role == 2:
-        flash("Logged In Successfully as Professional")
+        
         return render_template("service_provider_dashboard.html")
 
 
@@ -220,7 +225,6 @@ def profile():
         user = User.query.filter_by(u_id = session["user_id"]).first()
         if user.u_role == 0:
             username = request.form.get("username")
-            email = request.form.get("email")
             current_password = request.form.get("current_password")
             new_password = request.form.get("new_password")
             confirm_password = request.form.get("confirm_password")
@@ -251,7 +255,6 @@ def profile():
 
         elif user.u_role == 1:
             username = request.form.get("username")
-            email = request.form.get("email")
             current_password = request.form.get("current_password")
             new_password = request.form.get("new_password")
             confirm_password = request.form.get("confirm_password")
@@ -288,18 +291,15 @@ def profile():
         
         elif user.u_role == 2:
             username = request.form.get("username")
-            email = request.form.get("email")
             current_password = request.form.get("current_password")
             new_password = request.form.get("new_password")
             confirm_password = request.form.get("confirm_password")
             contact_number = request.form.get("inputPhone")
-            service_id = request.form.get("inputService")
-            experience = request.form.get("inputExperience")
             address = request.form.get("inputAddress")
             city = request.form.get("inputCity")
             pincode = request.form.get("inputPincode")
 
-            if not username or not current_password or not new_password or not confirm_password or not contact_number or not service_id or not experience or not address or not city or not pincode:
+            if not username or not current_password or not new_password or not confirm_password or not contact_number or not address or not city or not pincode:
                 flash("All fields are required")
                 return redirect(url_for("main.profile"))
 
@@ -328,6 +328,7 @@ def profile():
             p_user.p_contact_namer = contact_number
             db.session.commit()
             flash("Profile Updated Successfully")
+            return redirect(url_for("main.profile"))
 
 @my_blueprint.route("/search", methods = ["GET", "POST"])
 @requires_login
@@ -434,10 +435,9 @@ def delete_service_provider(provider_id):
     return redirect(url_for("main.dashboard"))
 
 @my_blueprint.route("/service_provider/<int:provider_id>/")
-@requires_admin
 def view_service_provider(provider_id):
     provider = ServiceProvider.query.filter_by(p_id = provider_id).first()
     service = Service.query.filter_by(s_id = provider.p_service_id).first()
-    service_requests = ServiceRequest.query.filter_by(sr_provider_id = provider_id).all()
-    service_feedback = ServiceFeedback.query.filter_by(sf_provider_id = service_requests).all()
+    service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = provider_id).all()
+    service_feedback = ServiceFeedback.query.filter_by(sf_service_provider_id = provider_id).all()
     return render_template("service_provider_profile.html", provider = provider, service = service, service_requests = service_requests, service_feedback = service_feedback)
