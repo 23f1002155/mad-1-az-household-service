@@ -50,6 +50,13 @@ class ServiceProvider(db.Model):
     user = db.relationship("User", backref = "service_provider_database", lazy = True)
     service = db.relationship("Service", backref = "service_provider_database", lazy = True)
 
+
+class ServiceCategory(db.Model):
+    __tablename__ = "service_category_database"
+    sc_id = db.Column(db.Integer, primary_key = True)
+    sc_name = db.Column(db.String, nullable = False)
+    
+
 class Service(db.Model):
     __tablename__ = "service_database"
     s_id = db.Column(db.Integer, primary_key = True)
@@ -57,6 +64,9 @@ class Service(db.Model):
     s_rate = db.Column(db.Integer, nullable = False)
     s_description = db.Column(db.String, nullable = False)
     s_time_required = db.Column(db.REAL, nullable = False)
+    s_category_id = db.Column(db.Integer, db.ForeignKey('service_category_database.sc_id'))
+
+    category = db.relationship("ServiceCategory", backref = "service_database", lazy = True)
 
 class ServiceRequest(db.Model):
     __tablename__ = "service_request_database"
@@ -82,3 +92,4 @@ class ServiceFeedback(db.Model):
 
     service_request = db.relationship("ServiceRequest", backref = "service_feedback_database", lazy = True)
     service_customer = db.relationship("Customer", backref = "service_feedback_database", lazy = True)
+

@@ -16,17 +16,9 @@
                 <label for="email" class="form-label">Email:</label>
                 <input type="email" class="form-control" name="email" value="{{ user.u_email }}" disabled>
             </div>
-            <div class="form-group col-md-6">
-                <label for="current_password" class="form-label">Current Password:</label>
-                <input type="password" class="form-control" name="current_password" required>
-            </div>
             <div class="form-group">
-                <label for="new_password" class="form-label">New Password:</label>
-                <input type="password" class="form-control" name="new_password" required>
-            </div>`
-            <div class="form-group">
-                <label for="confirm_password" class="form-label">Confirm Password:</label>
-                <input type="password" class="form-control" name="confirm_password" required>
+                <label for="Update Password" class="form-label">Password:</label>
+                <a href="{{ url_for('main.update_password') }}" class="btn btn-outline-primary">Update Password</a>
             </div>
             {% endif %}
             {% if user.u_role == 1 %}
@@ -39,16 +31,8 @@
                 <input type="email" class="form-control" name="email" value="{{ user.u_email }}" disabled>
             </div>
             <div class="form-group">
-                <label for="current_password" class="form-label">Current Password:</label>
-                <input type="password" class="form-control" name="current_password" required>
-            </div>
-            <div class="form-group">
-                <label for="new_password" class="form-label">New Password:</label>
-                <input type="password" class="form-control" name="new_password" required>
-            </div>`
-            <div class="form-group">
-                <label for="confirm_password" class="form-label">Confirm Password:</label>
-                <input type="password" class="form-control" name="confirm_password" required>
+                <label for="Update Password" class="form-label">Password:</label>
+                <a href="{{ url_for('main.update_password') }}" class="btn btn-outline-primary">Update Password</a>
             </div>
             <div class="form-group">
                 <label for="city" class="form-label">City:</label>
@@ -68,16 +52,8 @@
                 <input type="email" class="form-control" name="email" value="{{ user.u_email }}" disabled>
             </div>
             <div class="form-group">
-                <label for="current_password" class="form-label">Current Password:</label>
-                <input type="password" class="form-control" name="current_password" required>
-            </div>
-            <div class="form-group">
-                <label for="new_password" class="form-label">New Password:</label>
-                <input type="password" class="form-control" name="new_password" required>
-            </div>`
-            <div class="form-group">
-                <label for="confirm_password" class="form-label">Confirm Password:</label>
-                <input type="password" class="form-control" name="confirm_password" required>
+                <label for="Update Password" class="form-label">Password:</label>
+                <a href="{{ url_for('main.update_password') }}" class="btn btn-outline-primary">Update Password</a>
             </div>
             <div class="col-md-6">
                 <label for="inputPhone" class="form-label">Phone</label>

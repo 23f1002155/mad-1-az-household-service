@@ -6,7 +6,57 @@
 {% include 'flashmessage.html' %}
 <div class="container" style="height: fit-content;">
     <h1>Customer Dashboard</h1>
-
-      
+    <div class="container">
+        <div style="height:fit-content">
+            <h3>Services Provided By Us</h3>
+            <div class="row">
+            {% for service_category in service_categories %}
+            <div class="col-sm-3">
+            <div class="card" style="width: 18rem;">
+                <a href="{{ url_for('main.service', s_category_id = service_category.sc_id) }}" style="text-decoration: none;"><img src="https://picsum.photos/200?random={{loop.index}}" class="card-img-top" alt="Image can't be loaded now"></a>
+                <div class="card-body">
+                  <h5 class="card-title" value="{{ service_category.sc_id }}"><a href="{{ url_for('main.service', s_category_id = service_category.sc_id) }}" style="text-decoration: none;color:black">{{ service_category.sc_name }}</a></h5>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="container">
+        <div style="height:fit-content">
+            <h3>Service Requests</h3>
+            <table class="table table-bordered table-hover">
+                <thead class="table-success">
+                  <tr>
+                        <th>Sequence Number</th>
+                        <th>Service Request Id</th>
+                        <th>Service Name</th>
+                        <th>Service Date and Time</th>
+                        <th>Service Address</th>
+                        <th>Service City, Pincode</th>
+                        <th>Service Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(service_requests|length) %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ service_requests[i].sr_id }}</td>
+                        <td>{{ services[i].s_name }}</td>
+                        <td>{{ service_requests[i].sr_date_time }}</td>
+                        <td>{{ service_requests[i].sr_address }}</td>
+                        <td>{{ service_requests[i].sr_city }}, {{ service_requests[i].sr_pincode }}</td>
+                        <td>{{ service_requests[i].sr_status }}</td>
+                        <td>
+                            {% if service_requests[i].sr_status == "Assigned" %}
+                            <a href="{{ url_for('main.service_completed', sr_id=service_requests[i].sr_id) }}" class="btn btn-outline-success">Completed</a>
+                            {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 </div>
 {% endblock %}

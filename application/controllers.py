@@ -12,8 +12,8 @@ my_blueprint = Blueprint('main', __name__)
 def home():
     if "user_id" in session:
         return redirect(url_for("main.dashboard"))
-    services = Service.query.all()
-    return render_template("home.html", services = services)
+    service_categories = ServiceCategory.query.all()
+    return render_template("home.html", service_categories = service_categories)
 
 @my_blueprint.route("/login", methods = ["GET", "POST"])
 def login():
@@ -189,18 +189,22 @@ def dashboard():
     if user.u_role == 0:
         services = Service.query.all()
         services_providers = ServiceProvider.query.all()
-        
+       
         return render_template("admin_dashboard.html" , services = services, services_providers = services_providers)
     elif user.u_role == 1:
         services = Service.query.all()
-        return render_template("customer_dashboard.html", services = services)
+        customer = Customer.query.filter_by(c_user_id = session["user_id"]).first()
+        service_requests = ServiceRequest.query.filter_by(sr_customer_id = customer.c_id).all()
+        service_categories = ServiceCategory.query.all()
+        return render_template("customer_dashboard.html", services = services, service_requests = service_requests, service_categories = service_categories)
+
     elif user.u_role == 2:
-        service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = session["user_id"]).all()
+        user = User.query.filter_by(u_id = session["user_id"]).first()
+        service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
+        service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id).all()
         customer_ids = {request.sr_customer_id for request in service_requests}
         customers = Customer.query.filter(Customer.c_id.in_(customer_ids)).all()
-        service_provide_ids = {request.sr_service_provider_id for request in service_requests}
-        service_providers = ServiceProvider.query.filter(ServiceProvider.p_id.in_(service_provide_ids)).all() 
-        return render_template("service_provider_dashboard.html", service_requests = service_requests, customers = customers, service_providers = service_providers)
+        return render_template("service_provider_dashboard.html", service_requests = service_requests, customers = customers, service_provider = service_provider)
 
 
 
@@ -212,7 +216,7 @@ def dashboard():
 def logout():
     session.pop("user_id")
     flash("Logged Out Successfully")
-    return redirect(url_for("main.home"))
+    return redirect(url_for("main.login"))
 
 @my_blueprint.route("/profile", methods = ["GET", "POST"])
 @requires_login
@@ -231,62 +235,43 @@ def profile():
         user = User.query.filter_by(u_id = session["user_id"]).first()
         if user.u_role == 0:
             username = request.form.get("username")
-            current_password = request.form.get("current_password")
-            new_password = request.form.get("new_password")
-            confirm_password = request.form.get("confirm_password")
 
-            if not username or not current_password or not new_password or not confirm_password:
+
+            if not username:
                 flash("All fields are required")
                 return redirect(url_for("main.profile"))
-            
-            if not check_password_hash(user.u_passhash, current_password):
-                flash("Invalid Password")
-                return redirect(url_for("main.profile"))
-            
-            if new_password != confirm_password:
-                flash("Passwords do not match")
-                return redirect(url_for("main.profile"))
+        
             
             if username != user.u_name:
                 new_username = User.query.filter_by(u_name = username).first()
                 if new_username:
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
-            new_passhash = generate_password_hash(new_password)
             user.u_name = username
-            user.u_passhash = new_passhash
             db.session.commit()
             flash("Profile Updated Successfully")
             return redirect(url_for("main.profile"))
 
         elif user.u_role == 1:
             username = request.form.get("username")
-            current_password = request.form.get("current_password")
-            new_password = request.form.get("new_password")
-            confirm_password = request.form.get("confirm_password")
             city = request.form.get("City")
             pincode = request.form.get("pincode")
 
-            if not username or not current_password or not new_password or not confirm_password or not city or not pincode:
+            if not username or not city or not pincode:
                 flash("All fields are required")
                 return redirect(url_for("main.profile"))
             
-            if not check_password_hash(user.u_passhash, current_password):
-                flash("Invalid Password")
-                return redirect(url_for("main.profile"))
-            
-            if new_password != confirm_password:
-                flash("Passwords do not match")
-                return redirect(url_for("main.profile"))
+
+
             
             if username != user.u_name:
                 new_username = User.query.filter_by(u_name = username).first()
                 if new_username:
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
-            new_passhash = generate_password_hash(new_password)
+
             user.u_name = username
-            user.u_passhash = new_passhash
+
             c_user = Customer.query.filter_by(c_user_id = session["user_id"])
             c_user.c_name = username
             c_user.c_city = city
@@ -297,35 +282,23 @@ def profile():
         
         elif user.u_role == 2:
             username = request.form.get("username")
-            current_password = request.form.get("current_password")
-            new_password = request.form.get("new_password")
-            confirm_password = request.form.get("confirm_password")
             contact_number = request.form.get("inputPhone")
             address = request.form.get("inputAddress")
             city = request.form.get("inputCity")
             pincode = request.form.get("inputPincode")
 
-            if not username or not current_password or not new_password or not confirm_password or not contact_number or not address or not city or not pincode:
+            if not username or not contact_number or not address or not city or not pincode:
                 flash("All fields are required")
                 return redirect(url_for("main.profile"))
 
-
-            if not check_password_hash(user.u_passhash, current_password):
-                flash("Invalid Password")
-                return redirect(url_for("main.profile"))
-            
-            if new_password != confirm_password:
-                flash("Passwords do not match")
-                return redirect(url_for("main.profile"))
             
             if username != user.u_name:
                 new_username = User.query.filter_by(u_name = username).first()
                 if new_username:
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
-            new_passhash = generate_password_hash(new_password)
+
             user.u_name = username
-            user.u_passhash = new_passhash
             p_user = ServiceProvider.query.filter_by(p_user_id = session["user_id"]).first()
             p_user.p_name = username
             p_user.p_city = city
@@ -335,6 +308,51 @@ def profile():
             db.session.commit()
             flash("Profile Updated Successfully")
             return redirect(url_for("main.profile"))
+        
+
+@my_blueprint.route("/update_password", methods = ["GET", "POST"])
+@requires_login
+def update_password():
+    if request.method == "GET":
+        return render_template("update_password.html")
+    elif request.method == "POST":
+        user = User.query.filter_by(u_id = session["user_id"]).first()
+        current_password = request.form.get("current_password")
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+
+        if not current_password or not new_password or not confirm_password:
+            flash("All fields are required")
+            return redirect(url_for("main.update_password"))
+        
+        if not check_password_hash(user.u_passhash, current_password):
+            flash("Invalid Password")
+            return redirect(url_for("main.update_password"))
+        
+        if new_password != confirm_password:
+            flash("Passwords do not match")
+            return redirect(url_for("main.update_password"))
+        
+        new_passhash = generate_password_hash(new_password)
+        user.u_passhash = new_passhash
+        db.session.commit()
+        flash("Password Updated Successfully")
+        return redirect(url_for("main.profile"))
+    
+@my_blueprint.route("/category_services/<int:s_category_id>")
+@requires_login
+def services(s_category_id):
+    services = Service.query.filter_by(s_category_id = s_category_id).all()
+    service_category = ServiceCategory.query.filter_by(sc_id = s_category_id).first()
+    return render_template("services.html", services = services, service_category = service_category)
+
+@my_blueprint.route("/category_service/<int:s_category_id>")
+def service(s_category_id):
+    if "user_id" in session:
+        return redirect(url_for("main.services", s_category_id = s_category_id))
+    services = Service.query.filter_by(s_category_id = s_category_id).all()
+    service_category = ServiceCategory.query.filter_by(sc_id = s_category_id).first()
+    return render_template("service.html", services = services, service_category = service_category)
 
 @my_blueprint.route("/search", methods = ["GET", "POST"])
 @requires_login
@@ -351,15 +369,17 @@ def summary():
 @requires_admin
 def edit_service(service_id):
     service = Service.query.filter_by(s_id = service_id).first()
+    service_categories = ServiceCategory.query.all()
     if request.method == "GET":
-        return render_template("edit_service.html", service = service)
+        return render_template("edit_service.html", service = service, service_categories = service_categories)
     elif request.method == "POST":
         s_name = request.form.get("s_name")
         s_rate = request.form.get("s_rate")
         s_description = request.form.get("s_description")
         s_time_required = request.form.get("s_time_required")
+        s_category_id = request.form.get("s_category_id")
 
-        if not s_name or not s_rate or not s_description or not s_time_required:
+        if not s_name or not s_rate or not s_description or not s_time_required or not s_category_id:
             flash("All fields are required")
             return redirect(url_for("main.edit_service", service_id = service_id))
         
@@ -367,6 +387,7 @@ def edit_service(service_id):
         service.s_rate = s_rate
         service.s_description = s_description
         service.s_time_required = s_time_required
+        service.s_category_id = s_category_id
         db.session.commit()
         flash("Service Updated Successfully")
         return redirect(url_for("main.dashboard"))
@@ -385,22 +406,46 @@ def delete_service(service_id):
 @requires_admin
 def add_service():
     if request.method == "GET":
-        return render_template("add_service.html")
+        service_categories = ServiceCategory.query.all()
+        return render_template("add_service.html", service_categories = service_categories)
     elif request.method == "POST":
         s_name = request.form.get("s_name")
         s_rate = request.form.get("s_rate")
         s_description = request.form.get("s_description")
         s_time_required = request.form.get("s_time_required")
+        s_catergory_id = request.form.get("s_category_id")
 
-        if not s_name or not s_rate or not s_description or not s_time_required:
+        if not s_name or not s_rate or not s_description or not s_time_required or not s_catergory_id:
             flash("All fields are required")
             return redirect(url_for("main.add_service"))
         
-        new_service = Service(s_name = s_name, s_rate = s_rate, s_description = s_description, s_time_required = s_time_required)
+        new_service = Service(s_name = s_name, s_rate = s_rate, s_description = s_description, s_time_required = s_time_required, s_category_id = s_catergory_id)
         db.session.add(new_service)
         db.session.commit()
         flash("Service Added Successfully")
         return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_request/<int:s_id>")
+@requires_login
+def service_request(s_id):
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 1:
+        sr_customer = Customer.query.filter_by(c_user_id = user.u_id).first()
+        sr_service_provider = ServiceProvider.query.filter_by(p_service_id = s_id).first()
+        sr_status = "Requested"
+        sr_date_time = datetime.now(tz=None)
+        new_service_request = ServiceRequest(sr_customer_id = sr_customer.c_id, sr_service_provider_id = sr_service_provider.p_id, sr_service_id = s_id, sr_status = sr_status, sr_date_time = sr_date_time)
+        db.session.add(new_service_request)
+        db.session.commit()
+        flash("Service Requested Successfully")
+        return redirect(url_for("main.dashboard"))
+    elif user.u_role == 2:
+        flash("Professional cannot request service")
+        return redirect(url_for("main.dashboard"))
+    elif user.u_role == 0:
+        flash("Admin cannot request service")
+        return redirect(url_for("main.dashboard"))
+
 
 @my_blueprint.route("/service_provider/<int:provider_id>/approve")
 @requires_admin
@@ -447,3 +492,66 @@ def view_service_provider(provider_id):
     service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = provider_id).all()
     service_feedback = ServiceFeedback.query.filter_by(sf_service_provider_id = provider_id).all()
     return render_template("service_provider_profile.html", provider = provider, service = service, service_requests = service_requests, service_feedback = service_feedback)
+
+@my_blueprint.route("/service_request/<int:sr_id>/accept")
+@requires_login
+def accept_request(sr_id):
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 2:
+        service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+        service_request.sr_status = "Assigned"
+        db.session.commit()
+        flash("Service Request Approved Successfully")
+        return redirect(url_for("main.dashboard"))
+    else:
+        flash("You do not have permission to access this page")
+        return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_request/<int:sr_id>/reject")
+@requires_login
+def reject_request(sr_id):
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 2:
+        service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+        service_request.sr_status = "Rejected"
+        db.session.commit()
+        flash("Service Request Rejected")
+        return redirect(url_for("main.dashboard"))
+    else:
+        flash("You do not have permission to access this page")
+        return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_request/<int:sr_id>/completed", methods = ["GET", "POST"])
+@requires_login
+def service_completed(sr_id):
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 1:
+        if request.method == "GET":
+            service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+            service_provider = ServiceProvider.query.filter_by(p_id = service_request.sr_service_provider_id).first()
+            service = Service.query.filter_by(s_id = service_request.sr_service_id).first()
+            completion_date_time = datetime.now(tz=None)
+            service_request.sr_date_time = completion_date_time
+            return render_template("feedback.html", service_request = service_request, service_provider = service_provider, service = service, completion_date_time = completion_date_time)
+        elif request.method == "POST":
+            service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+            sf_service_request_id = service_request.sr_service_provider_id
+            sf_rating = request.form.get("service_rating")
+            sf_customer_id  = service_request.sr_customer_id
+            sf_service_provider_id = service_request.sr_service_provider_id
+            sf_feedback = request.form.get("service_feedback")
+            new_service_feedback = ServiceFeedback(sf_service_request_id = sf_service_request_id, sf_rating = sf_rating, sf_customer_id = sf_customer_id, sf_service_provider_id = sf_service_provider_id, sf_feedback = sf_feedback)
+            service_request.sr_status = "Closed"
+            db.session.add(new_service_feedback)
+            db.session.commit()
+            flash("Service Request Completed Successfully")
+            return redirect(url_for("main.dashboard"))
+    else:
+        flash("You do not have permission to access this page")
+        return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/blocked")
+@requires_login
+def blocked():
+    flash("You have been blocked by the admin. Please contact the admin for further details")
+    return redirect(url_for("main.dashboard"))
