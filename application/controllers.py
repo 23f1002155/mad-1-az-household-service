@@ -18,6 +18,8 @@ def home():
 @my_blueprint.route("/login", methods = ["GET", "POST"])
 def login():
     if request.method == "GET":
+        if "user_id" in session:
+            return redirect(url_for("main.dashboard"))
         return render_template("login.html")
     elif request.method == "POST":
         username = request.form.get("username")
@@ -77,32 +79,35 @@ def login():
 @my_blueprint.route("/sign-up-customer", methods = ["GET", "POST"])
 def sign_up_customer():
     if request.method == "GET":
+        if "user_id" in session:
+            return redirect(url_for("main.dashboard"))
         return render_template("sign-up-customer.html")
     elif request.method == "POST":
-        username = request.form.get("inputName")
-        email = request.form.get("inputEmail4")
-        password = request.form.get("inputPassword4")
-        confirm_password = request.form.get("inputConfirmPassword4")
-        city = request.form.get("inputCity")
-        pincode = request.form.get("inputZip")
+        c_name = request.form.get("inputName")
+        c_email = request.form.get("inputEmail4")
+        c_password = request.form.get("inputPassword4")
+        c_confirm_password = request.form.get("inputConfirmPassword4")
+        c_address = request.form.get("inputAddress")
+        c_city = request.form.get("inputCity")
+        c_pincode = request.form.get("inputZip")
         blocked = False
 
-        if not username or not email or not password or not confirm_password or not city or not pincode:
+        if not c_name or not c_email or not c_password or not c_confirm_password or not c_city or not c_pincode or not c_address:
             flash("All fields are required")
             return redirect(url_for("main.sign_up_customer"))
-        if password != confirm_password:    
+        if c_password != c_confirm_password:    
             flash("Passwords do not match")
             return redirect(url_for("main.sign_up_customer"))
         
-        user = User.query.filter_by(u_name = username).first()
-        user_email = User.query.filter_by(u_email = email).first()
+        user = User.query.filter_by(u_name = c_name).first()
+        user_email = User.query.filter_by(u_email = c_email).first()
         if user or user_email:
             flash("Email already exists")
             return redirect(url_for("main.sign_up_customer"))
         else:
-            passhash = generate_password_hash(password)
-            new_user = User(u_name = username, u_email = email, u_passhash = passhash, u_role = 1)
-            new_customer = Customer(c_name = username, c_email = email, c_city = city, c_pincode = pincode, c_user_id = new_user.u_id, c_blocked = blocked)
+            passhash = generate_password_hash(c_password)
+            new_user = User(u_name = c_name, u_email = c_email, u_passhash = passhash, u_role = 1)
+            new_customer = Customer(c_name = c_name, c_email = c_email, c_address = c_address, c_city = c_city, c_pincode = c_pincode, c_user_id = new_user.u_id, c_blocked = blocked)
             db.session.add(new_user)
             db.session.add(new_customer)
             db.session.commit()
@@ -114,6 +119,8 @@ def sign_up_customer():
 @my_blueprint.route("/sign-up-serviceprovider", methods = ["GET", "POST"])
 def sign_up_serviceprovider():
     if request.method == "GET":
+        if "user_id" in session:
+            return redirect(url_for("main.dashboard"))
         services = Service.query.all()
         return render_template("sign-up-serviceprovider.html", services = services)
     elif request.method == "POST":
@@ -124,6 +131,12 @@ def sign_up_serviceprovider():
         contact_number = request.form.get("inputPhone")
         service_id= request.form.get("inputService")
         experience = request.form.get("inputExperience")
+        verfiication_document = request.files.get("inputVerificationDocument")
+        if not verfiication_document:
+            flash("Please upload a verification document")
+            return redirect(url_for("main.sign_up_serviceprovider"))
+        else:
+            verfiication_document.save(f"static/verification/{verfiication_document.filename}")
         address = request.form.get("inputAddress")
         city = request.form.get("inputCity")
         pincode = request.form.get("inputZip")
@@ -148,7 +161,7 @@ def sign_up_serviceprovider():
         
         db.session.add(new_user)
         db.session.commit()
-        new_provider = ServiceProvider(p_name = username, p_email = email, p_contact_number = contact_number, p_experience = experience, p_city = city, p_pincode = pincode, p_user_id = new_user.u_id, p_service_id = service_id, p_approved = approved, p_blocked = blocked)
+        new_provider = ServiceProvider(p_name = username, p_email = email, p_contact_number = contact_number, p_experience = experience, p_city = city, p_pincode = pincode, p_user_id = new_user.u_id, p_service_id = service_id, p_approved = approved, p_blocked = blocked, p_verification_document = verfiication_document.filename, p_address = address)
         db.session.add(new_provider)
         db.session.commit()
         flash("Account Created Successfully")
@@ -181,6 +194,7 @@ def requires_admin(my_fucntion):
     return main_function
 
 from datetime import datetime
+from sqlalchemy.orm import aliased
 
 @my_blueprint.route("/dashboard")
 @requires_login
@@ -192,20 +206,57 @@ def dashboard():
        
         return render_template("admin_dashboard.html" , services = services, services_providers = services_providers)
     elif user.u_role == 1:
-        services = Service.query.all()
         customer = Customer.query.filter_by(c_user_id = session["user_id"]).first()
         service_requests = ServiceRequest.query.filter_by(sr_customer_id = customer.c_id).all()
+        service_ids = {request.sr_service_id for request in service_requests}
+        services = Service.query.filter(Service.s_id.in_(service_ids)).all()
         service_categories = ServiceCategory.query.all()
-        return render_template("customer_dashboard.html", services = services, service_requests = service_requests, service_categories = service_categories)
+        ServiceAlias = aliased(Service)
+        CustomerAlias = aliased(Customer)
+
+        temp_table = db.session.query(
+            ServiceRequest.sr_id,
+            ServiceRequest.sr_status,
+            ServiceRequest.sr_date_time,
+            ServiceAlias.s_name.label('s_name'),
+            CustomerAlias.c_name.label('c_name'),
+            CustomerAlias.c_address.label('c_address'),
+            CustomerAlias.c_city.label('c_city'),
+            CustomerAlias.c_pincode.label('c_pincode')
+        ).join(
+            ServiceAlias, ServiceRequest.sr_service_id == ServiceAlias.s_id
+        ).join(
+            CustomerAlias, ServiceRequest.sr_customer_id == CustomerAlias.c_id
+        ).filter(
+            ServiceRequest.sr_customer_id == customer.c_id
+        ).all()
+        return render_template("customer_dashboard.html", service_categories = service_categories, temp_table = temp_table)
 
     elif user.u_role == 2:
         user = User.query.filter_by(u_id = session["user_id"]).first()
         service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
         service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id).all()
-        customer_ids = {request.sr_customer_id for request in service_requests}
-        customers = Customer.query.filter(Customer.c_id.in_(customer_ids)).all()
         service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id).all()
-        return render_template("service_provider_dashboard.html", service_requests = service_requests, customers = customers, service_provider = service_provider, service_feedbacks = service_feedbacks)
+        CustomerAlias = aliased(Customer)
+        ServiceProviderAlias = aliased(ServiceProvider)
+
+        temp_table = db.session.query(
+            ServiceRequest.sr_id,
+            ServiceRequest.sr_status,
+            ServiceRequest.sr_date_time,
+            CustomerAlias.c_name.label('c_name'),
+            CustomerAlias.c_city.label('c_city'),
+            CustomerAlias.c_pincode.label('c_pincode'),
+            ServiceProviderAlias.p_verification_document.label('p_verification_document'),
+            ServiceProviderAlias.p_blocked.label('p_blocked')
+        ).join(
+            CustomerAlias, ServiceRequest.sr_customer_id == CustomerAlias.c_id
+        ).join(
+            ServiceProviderAlias, ServiceRequest.sr_service_provider_id == ServiceProviderAlias.p_id
+        ).filter(
+            ServiceRequest.sr_service_provider_id == service_provider.p_id
+        ).all()
+        return render_template("service_provider_dashboard.html", temp_table = temp_table, service_feedbacks = service_feedbacks)
 
 
 
@@ -255,10 +306,11 @@ def profile():
 
         elif user.u_role == 1:
             username = request.form.get("username")
-            city = request.form.get("City")
-            pincode = request.form.get("pincode")
+            address = request.form.get("inputAddress")
+            city = request.form.get("inputCity")
+            pincode = request.form.get("inputPincode")
 
-            if not username or not city or not pincode:
+            if not username or not city or not pincode or not address:
                 flash("All fields are required")
                 return redirect(url_for("main.profile"))
             
@@ -273,8 +325,9 @@ def profile():
 
             user.u_name = username
 
-            c_user = Customer.query.filter_by(c_user_id = session["user_id"])
+            c_user = Customer.query.filter_by(c_user_id = session["user_id"]).first()
             c_user.c_name = username
+            c_user.c_address = address
             c_user.c_city = city
             c_user.c_pincode = pincode
             db.session.commit()
@@ -434,8 +487,9 @@ def service_request(s_id):
         sr_customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         sr_service_provider = ServiceProvider.query.filter_by(p_service_id = s_id).first()
         sr_status = "Requested"
-        sr_date_time = datetime.now(tz=None)
-        new_service_request = ServiceRequest(sr_customer_id = sr_customer.c_id, sr_service_provider_id = sr_service_provider.p_id, sr_service_id = s_id, sr_status = sr_status, sr_date_time = sr_date_time)
+        sr_date_time = str(datetime.now(tz=None))
+        new_sr_date_time = datetime.strptime(sr_date_time.split('.')[0], '%Y-%m-%d %H:%M:%S')
+        new_service_request = ServiceRequest(sr_customer_id = sr_customer.c_id, sr_service_provider_id = sr_service_provider.p_id, sr_service_id = s_id, sr_status = sr_status, sr_date_time = new_sr_date_time)
         db.session.add(new_service_request)
         db.session.commit()
         flash("Service Requested Successfully")
@@ -531,9 +585,9 @@ def service_completed(sr_id):
             service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
             service_provider = ServiceProvider.query.filter_by(p_id = service_request.sr_service_provider_id).first()
             service = Service.query.filter_by(s_id = service_request.sr_service_id).first()
-            completion_date_time = datetime.now(tz=None)
-            service_request.sr_date_time = completion_date_time
-            return render_template("feedback.html", service_request = service_request, service_provider = service_provider, service = service, completion_date_time = completion_date_time)
+            completion_date_time = str(datetime.now(tz=None))
+            new_completion_date_time = datetime.strptime(completion_date_time.split('.')[0], '%Y-%m-%d %H:%M:%S')
+            return render_template("feedback.html", service_request = service_request, service_provider = service_provider, service = service, completion_date_time = new_completion_date_time)
         elif request.method == "POST":
             service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
             sf_service_request_id = service_request.sr_service_provider_id
@@ -542,12 +596,15 @@ def service_completed(sr_id):
             sf_service_provider_id = service_request.sr_service_provider_id
             sf_feedback = request.form.get("service_feedback")
 
+
             if not sf_rating or not sf_feedback:
                 flash("All fields are required")
                 return redirect(url_for("main.service_completed", sr_id = sr_id))
             
             new_service_feedback = ServiceFeedback(sf_service_request_id = sf_service_request_id, sf_rating = sf_rating, sf_customer_id = sf_customer_id, sf_service_provider_id = sf_service_provider_id, sf_feedback = sf_feedback)
             service_request.sr_status = "Closed"
+            completion_date_time_str = request.form.get("completion_date_time")
+            service_request.sr_date_time = datetime.strptime(completion_date_time_str.split('.')[0], '%Y-%m-%d %H:%M:%S')
             db.session.add(new_service_feedback)
             db.session.commit()
             flash("Service Request Completed Successfully")

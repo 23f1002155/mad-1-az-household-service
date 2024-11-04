@@ -35,12 +35,16 @@
                 <a href="{{ url_for('main.update_password') }}" class="btn btn-outline-primary">Update Password</a>
             </div>
             <div class="form-group">
+                <label for="address" class="form-label">Address:</label>
+                <input type="text" class="form-control" name="inputAddress" value="{{ c_user.c_address }}" required>
+            </div>
+            <div class="form-group">
                 <label for="city" class="form-label">City:</label>
-                <input type="text" class="form-control" name="City" value="{{ c_user.c_city }}" required>
+                <input type="text" class="form-control" name="inputCity" value="{{ c_user.c_city }}" required>
             </div>
             <div class="form-group">
                 <label for="pincode" class="form-label">Pincode:</label>
-                <input type="text" class="form-control" name="pincode" value="{{ c_user.c_pincode }}" required>
+                <input type="text" class="form-control" name="inputPincode" value="{{ c_user.c_pincode }}" required>
             </div>
             {% elif user.u_role == 2 %}
             <div class="form-group">
@@ -71,7 +75,7 @@
               </div>
               <div class="col-12">
                 <label for="inputAddress" class="form-label">Address</label>
-                <textarea class="form-control" name="inputAddress" value="{{ p_user.p_address }}" required></textarea>
+                <input type="text" class="form-control" name="inputAddress" value="{{ p_user.p_address }}" required>
               </div>
               <div class="col-md-6">
                 <label for="inputCity" class="form-label">City</label>
@@ -86,7 +90,11 @@
                 
             {% endif %}
 
-            <button type="submit" class="btn btn-primary">Update Profile</button>
+            <div class="col-md-12" style="margin-left: 550px; margin-right:100px; margin-top:50px">
+                <button type="submit" class="btn btn-outline-success">Update Profile</button>
+            </div>
         </form>
+    </div>
+
         
 {% endblock %}

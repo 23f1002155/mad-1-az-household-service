@@ -10,7 +10,7 @@
   <div class="w-75" style="margin: 200px;">
     <div ><h1>Sign Up as Professional</h1></div>
     {% include 'flashmessage.html'   %}
-    <form class="row g-3" method="POST">
+    <form class="row g-3" method="POST" enctype="multipart/form-data" action="">
       <div class="col-md-6">
         <label for="inputName" class="form-label">UserName</label>
         <input type="text" class="form-control" name = "inputName" required>
@@ -43,6 +43,10 @@
       <div class="col-md-6">
         <label for="inputExperience" class="form-label">Experience(In Years)</label>
         <input type="text" class="form-control" name="inputExperience" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputVerificationDocument" class="form-label">Verification Document</label>
+        <input type="file" class="form-control" name="inputVerificationDocument" required>
       </div>
       <div class="col-12">
         <label for="inputAddress" class="form-label">Address</label>

@@ -29,34 +29,36 @@
             <table class="table table-bordered table-hover">
                 <thead class="table-success">
                   <tr>
-                        <th>Sequence Number</th>
-                        <th>Service Request Id</th>
-                        <th>Service Name</th>
-                        <th>Service Date and Time</th>
-                        <th>Service Address</th>
-                        <th>Service City, Pincode</th>
-                        <th>Service Status</th>
-                        <th>Action</th>
+                        <th  style="text-align: center; vertical-align:middle">Sequence Number</th>
+                        <th  style="text-align: center; vertical-align:middle">Service Request Id</th>
+                        <th  style="text-align: center; vertical-align:middle">Service Name</th>
+                        <th  style="text-align: center; vertical-align:middle">Service Date and Time</th>
+                        <th  style="text-align: center; vertical-align:middle">Service Address</th>
+                        <th  style="text-align: center; vertical-align:middle">Service City, Pincode</th>
+                        <th  style="text-align: center; vertical-align:middle">Service Status</th>
+                        <th  style="text-align: center; vertical-align:middle">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for i in range(service_requests|length) %}
+                      
+                    {% for i in range(temp_table|length) %}
                     <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ service_requests[i].sr_id }}</td>
-                        <td>{{ services[i].s_name }}</td>
-                        <td>{{ service_requests[i].sr_date_time }}</td>
-                        <td>{{ service_requests[i].sr_address }}</td>
-                        <td>{{ service_requests[i].sr_city }}, {{ service_requests[i].sr_pincode }}</td>
-                        <td>{{ service_requests[i].sr_status }}</td>
-                        <td>
-                            {% if service_requests[i].sr_status == "Assigned" %}
-                            <a href="{{ url_for('main.service_completed', sr_id=service_requests[i].sr_id) }}" class="btn btn-outline-success">Completed</a>
+                        <td  style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_id }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].s_name }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_date_time }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].c_address }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].c_city }}, {{ temp_table[i].c_pincode }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_status }}</td>
+                        <td  style="text-align: center; vertical-align:middle">
+                            {% if temp_table[i].sr_status == "Assigned" %}
+                            <a href="{{ url_for('main.service_completed', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-success">Completed</a>
                             {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
         </div>
 </div>
 {% endblock %}
