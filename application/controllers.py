@@ -204,7 +204,8 @@ def dashboard():
         service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id).all()
         customer_ids = {request.sr_customer_id for request in service_requests}
         customers = Customer.query.filter(Customer.c_id.in_(customer_ids)).all()
-        return render_template("service_provider_dashboard.html", service_requests = service_requests, customers = customers, service_provider = service_provider)
+        service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id).all()
+        return render_template("service_provider_dashboard.html", service_requests = service_requests, customers = customers, service_provider = service_provider, service_feedbacks = service_feedbacks)
 
 
 
@@ -540,6 +541,11 @@ def service_completed(sr_id):
             sf_customer_id  = service_request.sr_customer_id
             sf_service_provider_id = service_request.sr_service_provider_id
             sf_feedback = request.form.get("service_feedback")
+
+            if not sf_rating or not sf_feedback:
+                flash("All fields are required")
+                return redirect(url_for("main.service_completed", sr_id = sr_id))
+            
             new_service_feedback = ServiceFeedback(sf_service_request_id = sf_service_request_id, sf_rating = sf_rating, sf_customer_id = sf_customer_id, sf_service_provider_id = sf_service_provider_id, sf_feedback = sf_feedback)
             service_request.sr_status = "Closed"
             db.session.add(new_service_feedback)
