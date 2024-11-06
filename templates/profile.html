@@ -1,4 +1,10 @@
-{% extends 'layout2.html' %}
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
 {% block name %}
     Profile Page
 {% endblock %}

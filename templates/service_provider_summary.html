@@ -1,4 +1,10 @@
-{% extends 'layout2.html' %}
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
 {% block name %}    Summary
 {% endblock %}
 {% block content %}
@@ -55,10 +61,10 @@
             var ratingsChart = new Chart(ctx2, {
                 type: 'bar',
                 data: {
-                    labels: ["0-1", "1-2", "2-3", "3-4", "4-5"],
+                    labels: ["1", "2", "3", "4", "5"],
                     datasets: [{
                         label: 'Ratings',
-                        data: [ {{ ratings_count["0-1"] }}, {{ ratings_count["1-2"] }}, {{ ratings_count["2-3"] }}, {{ ratings_count["3-4"] }}, {{ ratings_count["4-5"] }} ],
+                        data: [ {{ ratings_count["1"] }}, {{ ratings_count["2"] }}, {{ ratings_count["3"] }}, {{ ratings_count["4"] }}, {{ ratings_count["5"] }} ],
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(255, 159, 64, 0.2)',

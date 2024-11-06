@@ -1,0 +1,51 @@
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
+{% block name %}
+    Search Results
+{% endblock %}
+
+{% block content %}
+{% include 'flashmessage.html'   %}
+    <div class="container" style="height:fit-content;">
+        <div class="col-md-12">
+            <div class="group-item">
+            <table class="table table-bordered table-hover">
+                <thead class="table-success">
+                  <tr class="table-success">
+                    <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                    <th style="text-align: center; vertical-align:middle">Service Name</th>
+                    <th style="text-align: center; vertical-align:middle">Professional Name</th>
+                    <th style="text-align: center; vertical-align:middle">Professional Experience</th>
+                    <th style="text-align:center; vertical-align:middle">Professional City</th>
+                    <th style="text-align: center; vertical-align:middle">Professional Pincode</th>
+                    <th style="text-align: center; vertical-align:middle">Overall Rating</th>
+                    <th style="text-align: center; vertical-align:middle">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for service_provider in search_result %}
+                    <tr>
+                        <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                        <td style="text-align: center; vertical-align:middle"><b>{{ service_provider[0].s_name }}</b></td>
+                        <td style="text-align: center; vertical-align:middle"><b>{{ service_provider[0].p_name }}</b></td>
+                        <td style="text-align: center; vertical-align:middle">{{ service_provider[0].p_experience }}</td>
+                        <td style="text-align: center; vertical-align:middle"> {{ service_provider[0].p_city }}</td>
+                        <td style="text-align: center; vertical-align:middle">{{ service_provider[0].p_pincode }}</td>
+                        <td style="text-align: center; vertical-align:middle">{{ service_provider[1] }}</td>
+                        <td  style="text-align: center; vertical-align:middle">
+                            <a href="{{ url_for('main.professional_list', s_id= service_provider[0].s_id) }}" class="btn btn-outline-success">Check Available Professionals</a>
+                            <a href="{{ url_for('main.service_request', s_id= service_provider[0].s_id) }}" class="btn btn-outline-success">Request Service</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

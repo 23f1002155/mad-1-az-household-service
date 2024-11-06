@@ -1,4 +1,10 @@
-{% extends 'layout2.html' %}
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
 
 {% block name %}
     Admin Dashboard
@@ -68,13 +74,17 @@
                     <td style="text-align: center; vertical-align:middle"><a href="mailto:{{ service_provider.p_email }}" style="text-decoration: none; color:black">{{ service_provider.p_email }}</a></td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.p_contact_number }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.service.s_name }}</td>
-                    <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}" target="_blank">View</a></td>
+                    <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}"  style="text-decoration: none;" target="_blank">View</a></td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.p_city }}</td>
                     <td  style="text-align: center; vertical-align:middle">{{ service_provider.p_approved }}</td>
                     <td  style="text-align: center; vertical-align:middle">{{ service_provider.p_blocked }}</td> 
                     <td  style="text-align: center; vertical-align:middle">
-                        <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success">Approve</a>
+                        {% if service_provider.p_approved == False %}
+                            <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success">Approve</a>
+                            <a href="/service_provider/{{ service_provider.p_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                        {% else %}
                         <a href="/service_provider/{{ service_provider.p_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                        {% endif %}
                         {% if service_provider.p_blocked == False %}
                         <a href="/service_provider/{{ service_provider.p_id }}/block" class="btn btn-outline-secondary">Block</a>
                         {% else %}
@@ -87,7 +97,47 @@
             </tbody>
             </table>
         </div>
+        <div class="group-item">   
+            <h4>Customers</h4>
+            <table class="table table-bordered table-hover">
+                <thead class="table-success">
+                  <tr class="table-success">
+                    <th style="text-align: center; vertical-align:middle; width:1%">Sequence Number</th>
+                    <th style="text-align: center; vertical-align:middle">Name</th>
+                    <th style="text-align: center; vertical-align:middle">Email</th>
+                    <th style="text-align: center; vertical-align:middle;">Address</th>
+                    <th style="text-align: center; vertical-align:middle">City</th>
+                    <th style="text-align: center; vertical-align:middle">Pincode</th>
+                    <th style="text-align: center; vertical-align:middle">Blocked</th>
+                    <th style="text-align: center; vertical-align:middle">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for customer in customers %}
+                    <tr>
+                        <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                        <td style="text-align: center; vertical-align:middle"><b>{{ customer.c_name }}</b></td>
+                        <td style="text-align: center; vertical-align:middle"><a href="mailto:{{ customer.c_email }}" style="text-decoration: none; color:black">{{ customer.c_email }}</a></td>
+                        <td style="text-align: center; vertical-align:middle">{{ customer.c_address }}</td>
+                        <td style="text-align: center; vertical-align:middle">{{ customer.c_city }}</td>
+                        <td style="text-align: center; vertical-align:middle">{{ customer.c_pincode }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ customer.c_blocked }}</td> 
+                        <td  style="text-align: center; vertical-align:middle">
+                            <a href="/customer/{{ customer.c_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                            {% if customer.c_blocked == False %}
+                                <a href="/customer/{{ customer.c_id }}/block" class="btn btn-outline-secondary">Block</a>
+                            {% else %}
+                                <a href="/customer/{{ customer.c_id }}/unblock" class="btn btn-outline-secondary">Unlock</a> 
+                            {% endif %}
+                            
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+            </div>
     </div>
+
 </div>
 
 {% endblock %}

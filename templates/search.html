@@ -1,0 +1,39 @@
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
+{% block name %}
+    Search
+{% endblock %}
+
+{% block content %}
+{% include 'flashmessage.html'   %}
+    <div class="container" style="height: 500px;">
+        <form action="" method="post" class="inline">
+        <div class="form-group row">
+            <div class="col-md-2">
+                <label for="search_by"></label>
+                <select class="form-control" id="search_by" name="search_by">
+                    <option value="search_by" selected>Search By...</option>
+                    <option value="p_name">Professional Name</option>
+                    <option value="p_pincode">Pincode</option>
+                    <option value="p_city">City</option>
+                    <option value="s_name">Service Name</option>
+                    <option value="p_experience">Professional Experience</option>
+                    <option value="rating">Professional Rating</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="search"></label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Search...">
+            </div>
+            <div class="col-md-1" style="margin-top: 27px;">
+                <button type="submit" class="btn btn-outline-success">Search</button> 
+            </div>
+        </div>
+        </form>
+    </div>
+{% endblock %}
