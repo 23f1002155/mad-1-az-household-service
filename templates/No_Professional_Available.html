@@ -1,0 +1,14 @@
+{% extends 'layout2.html' %}
+{% block name %}
+    No Professionals Available
+{% endblock %}
+ 
+{% block content %}
+{% include 'flashmessage.html'   %}
+<div class="container" style="height: 500px;">
+    <h2 style="margin-left: 200px; margin-top: 50px;"><b>No Professional Available For {{ service.s_name }}</b></h2>
+    <a href="{{  url_for('main.service', s_category_id = service.s_category_id) }}" style="margin-top: 300px; margin-left:600px"> Go Back</a>
+</div>
+
+
+{% endblock %}

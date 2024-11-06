@@ -48,12 +48,12 @@
         <table class="table table-bordered table-hover">
             <thead class="table-success">
               <tr class="table-success">
-                <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                <th style="text-align: center; vertical-align:middle; width:1%">Sequence Number</th>
                 <th style="text-align: center; vertical-align:middle">Name</th>
                 <th style="text-align: center; vertical-align:middle">Email</th>
                 <th style="text-align: center; vertical-align:middle">Phone</th>
                 <th style="text-align: center; vertical-align:middle">Service</th>
-                <th style="text-align: center; vertical-align:middle">Verification Document</th>
+                <th style="text-align: center; vertical-align:middle; width:1%">Verification Document</th>
                 <th style="text-align: center; vertical-align:middle">City</th>
                 <th style="text-align: center; vertical-align:middle">Approved</th>
                 <th style="text-align: center; vertical-align:middle">Blocked</th>
@@ -66,7 +66,7 @@
                     <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
                     <td style="text-align: center; vertical-align:middle"><b><a href="/service_provider/{{ service_provider.p_id }}" style="text-decoration:none">{{ service_provider.p_name }}</a></b></td>
                     <td style="text-align: center; vertical-align:middle"><a href="mailto:{{ service_provider.p_email }}" style="text-decoration: none; color:black">{{ service_provider.p_email }}</a></td>
-                    <td style="text-align: center; vertical-align:middle">{{ service_provider.p_phone }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ service_provider.p_contact_number }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.service.s_name }}</td>
                     <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}" target="_blank">View</a></td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.p_city }}</td>

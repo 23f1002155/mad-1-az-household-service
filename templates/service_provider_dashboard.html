@@ -23,7 +23,7 @@
         <tbody>
             {% for i in range(temp_table|length) %}
             <tr>
-                {% if temp_table[i].sr_status != "Closed" %}
+                {% if temp_table[i].sr_status != "Closed" and temp_table[i].sr_status != "Rejected" %}
                 <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_id }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ temp_table[i].c_name }}</td>
@@ -31,7 +31,7 @@
                 <td style="text-align: center; vertical-align:middle">{{ temp_table[i].c_city }}, {{ temp_table[i].c_pincode }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_status }}</td>
                 <td style="text-align: center; vertical-align:middle">
-                    {% if temp_table.p_blocked == True %}
+                    {% if temp_table[i].p_blocked == True %}
                     <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-secondary" >Accept</a>
                     <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-secondary" >Reject</a>
                     {% else %}
@@ -59,16 +59,42 @@
             </tr>
         </thead>
         <tbody>
-            {% for i in range(temp_table|length) %}
+            {% for j in range(temp_table|length) %}
             <tr>
-            {% if temp_table[i].sr_status == "Closed" %}
+            {% if temp_table[j].sr_status == "Closed" %}
             <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_id }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[i].c_name }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_date_time }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[i].c_city }}, {{ temp_table[i].c_pincode }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[i].sf_feedback }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[i].sf_rating }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_id }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_name }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_date_time }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_city }}, {{ temp_table[j].c_pincode }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[j].sf_feedback }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[j].sf_rating }}</td>
+            {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3>Reject Services</h3>
+    <table class="table table-bordered table-hover">
+        <thead class="table-success">
+          <tr>
+                <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                <th style="text-align: center; vertical-align:middle">Service Request Id</th>
+                <th style="text-align: center; vertical-align:middle">Customer Name</th>
+                <th style="text-align: center; vertical-align:middle">Service Date and Time</th>
+                <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for j in range(temp_table|length) %}
+            <tr>
+            {% if temp_table[j].sr_status == "Rejected" %}
+            <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_id }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_name }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_date_time }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_city }}, {{ temp_table[j].c_pincode }}</td>
             {% endif %}
             </tr>
             {% endfor %}

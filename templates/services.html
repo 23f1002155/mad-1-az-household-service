@@ -21,7 +21,7 @@
                     <p class="card-text">{{ service.s_description }}</p>
                     <p class="card-text">Rate: &#8377 {{ service.s_rate }} per hour</p>
                     <p class="card-text">Time Required: {{ service.s_time_required }} hours</p>
-                    <a href="{{ url_for('main.service_request', s_id=service.s_id) }}" class="btn btn-outline-success">Request Service</a>
+                    <a href="{{ url_for('main.professional_list', s_id=service.s_id) }}" class="btn btn-outline-success">Check Available Professionals</a>
                 </div>
             </div>
         </div>

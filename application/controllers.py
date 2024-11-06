@@ -358,7 +358,7 @@ def profile():
             p_user.p_city = city
             p_user.p_pincode = pincode
             p_user.p_address = address
-            p_user.p_contact_namer = contact_number
+            p_user.p_contact_number = contact_number
             db.session.commit()
             flash("Profile Updated Successfully")
             return redirect(url_for("main.profile"))
@@ -416,8 +416,62 @@ def search():
 @my_blueprint.route("/summary")
 @requires_login
 def summary():
-    return "Summary Page"
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 0:
+        users = User.query.all()
+        total_users = len(users) -1
+        customes = Customer.query.all()
+        total_customers = len(customes)
+        service_providers = ServiceProvider.query.all()
+        total_service_providers = len(service_providers)
+        service_requests = ServiceRequest.query.all()
+        total_service_requests = len(service_requests) 
+        total_requested_services = len([request for request in service_requests if request.sr_status == "Requested"])
+        total_assigned_services = len([request for request in service_requests if request.sr_status == "Assigned"])
+        total_rejected_services = len([request for request in service_requests if request.sr_status == "Rejected"])
+        total_closed_services = len([request for request in service_requests if request.sr_status == "Closed"])
+        return render_template("admin_summary.html", total_users = total_users, total_customers = total_customers, total_service_providers = total_service_providers, total_service_requests = total_service_requests, total_requested_services = total_requested_services, total_assigned_services = total_assigned_services, total_rejected_services = total_rejected_services, total_closed_services = total_closed_services)
 
+    elif user.u_role == 1:
+        customer = Customer.query.filter_by(c_user_id = session["user_id"]).first()
+        service_requests = ServiceRequest.query.filter_by(sr_customer_id = customer.c_id).all()
+        total_service_requests = len(service_requests)
+        total_requested_services = len([request for request in service_requests if request.sr_status == "Requested"])
+        total_assigned_services = len([request for request in service_requests if request.sr_status == "Assigned"])
+        total_rejected_services = len([request for request in service_requests if request.sr_status == "Rejected"])
+        total_closed_services = len([request for request in service_requests if request.sr_status == "Closed"])
+        return render_template("customer_summary.html", total_service_requests = total_service_requests, total_requested_services = total_requested_services, total_assigned_services = total_assigned_services, total_rejected_services = total_rejected_services, total_closed_services = total_closed_services)
+
+    elif user.u_role == 2:
+        service_provider = ServiceProvider.query.filter_by(p_user_id = session["user_id"]).first()
+        service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id).all()
+        total_service_requests = len(service_requests)
+        total_requested_services = len([request for request in service_requests if request.sr_status == "Requested"])
+        total_assigned_services = len([request for request in service_requests if request.sr_status == "Assigned"])
+        total_rejected_services = len([request for request in service_requests if request.sr_status == "Rejected"])
+        total_closed_services = len([request for request in service_requests if request.sr_status == "Closed"])
+        service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id).all()
+        ratings_count = {
+            "0-1": 0,
+            "1-2": 0,
+            "2-3": 0,
+            "3-4": 0,
+            "4-5": 0
+        }
+
+        for feedback in service_feedbacks:
+            if 0 <= feedback.sf_rating <= 1:
+                ratings_count["0-1"] += 1
+            elif 1 < feedback.sf_rating <= 2:
+                ratings_count["1-2"] += 1
+            elif 2 < feedback.sf_rating <= 3:
+                ratings_count["2-3"] += 1
+            elif 3 < feedback.sf_rating <= 4:
+                ratings_count["3-4"] += 1
+            elif 4 < feedback.sf_rating <= 5:
+                ratings_count["4-5"] += 1
+
+        return render_template("service_provider_summary.html", total_service_requests = total_service_requests, total_requested_services = total_requested_services, total_assigned_services = total_assigned_services, total_rejected_services = total_rejected_services, total_closed_services = total_closed_services, ratings_count = ratings_count)
 
 @my_blueprint.route("/service/<int:service_id>/edit", methods = ["GET", "POST"])
 @requires_admin
@@ -618,3 +672,31 @@ def service_completed(sr_id):
 def blocked():
     flash("You have been blocked by the admin. Please contact the admin for further details")
     return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/professional_list/<int:s_id>")
+@requires_login
+def professional_list(s_id):
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 1:
+        service = Service.query.filter_by(s_id = s_id).first()
+        service_providers = ServiceProvider.query.filter_by(p_service_id = s_id).all()
+        service_providers_and_ratings = []
+        for service_provider in service_providers:
+            feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()
+            if feedbacks:
+                average_rating = sum(feedback.sf_rating for feedback in feedbacks) / len(feedbacks)
+            else:
+                average_rating = "No Ratings"
+            service_providers_and_ratings.append((service_provider, average_rating))
+        
+        if service_providers_and_ratings:
+            return render_template("professional_list.html", service=service, service_providers_and_ratings=service_providers_and_ratings)
+        else:
+            return render_template("No_Professional_Available.html", service=service)
+
+    elif user.u_role == 2:
+        flash("Professional cannot request service")
+        return redirect(url_for("main.dashboard"))
+    elif user.u_role == 0:
+        flash("Admin cannot request service")
+        return redirect(url_for("main.dashboard"))

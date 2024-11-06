@@ -4,6 +4,52 @@
 {% endblock %}
 {% block content %}
 {% include 'flashmessage.html' %}
+<div class="container" style="height:fit-content;">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 style="margin-left: 450px;">Total Active Users</h3>
+            <h4 style="margin-left: 550px;"><b>{{ total_users }}</b></h4>
+        </div>
+        <div class="col-md-4">
+            <h3>Professionals vs Customers</h3>
+            <canvas id="userTypeChart"></canvas>
+        </div>
+        <div class="col-md-4" style="margin-left: 300px;">
+            <h3>Service Requests Status</h3>
+            <canvas id="serviceRequestsChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+
+
+        var ctx2 = document.getElementById('userTypeChart').getContext('2d');
+        var userTypeChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['Professionals', 'Customers'],
+                datasets: [{
+                    data: [ {{ total_service_providers }}, {{ total_customers }} ],
+                    backgroundColor: ['#FF6384', '#36A2EB']
+                }]
+            }
+        });
+
+        var ctx3 = document.getElementById('serviceRequestsChart').getContext('2d');
+        var serviceRequestsChart = new Chart(ctx3, {
+            type: 'pie',
+            data: {
+                labels: ['Closed', 'Requested', 'Rejected', 'Assigned'],
+                datasets: [{
+                    data: [{{ total_closed_services }}, {{ total_requested_services }} , {{ total_rejected_services }}, {{ total_assigned_services }}],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                }]
+            }
+        });
+    </script>
+</div>
 
 
 
