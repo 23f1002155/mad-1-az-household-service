@@ -3,6 +3,7 @@ from flask import render_template
 from flask import Blueprint
 from application.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.sql import func
 from functools import wraps
 
 my_blueprint = Blueprint('main', __name__)
@@ -13,7 +14,9 @@ def home():
     if "user_id" in session:
         return redirect(url_for("main.dashboard"))
     service_categories = ServiceCategory.query.all()
-    return render_template("home.html", service_categories = service_categories)
+    top_services = Service.query.order_by(func.random()).limit(2).all()
+    all_services = Service.query.all()
+    return render_template("home.html", service_categories = service_categories, services = top_services, all_services = all_services)
 
 @my_blueprint.route("/login", methods = ["GET", "POST"])
 def login():
@@ -615,6 +618,9 @@ def service_request(s_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 1:
         sr_customer = Customer.query.filter_by(c_user_id = user.u_id).first()
+        if sr_customer.c_blocked:
+            flash("You are blocked by admin. Please contact admin for further details")
+            return redirect(url_for("main.dashboard"))
         sr_service_provider = ServiceProvider.query.filter_by(p_service_id = s_id).first()
         sr_status = "Requested"
         sr_date_time = str(datetime.now(tz=None))
@@ -650,6 +656,24 @@ def block_service_provider(provider_id):
     flash("Service Provider Blocked Successfully")
     return redirect(url_for("main.dashboard"))
 
+@my_blueprint.route("/customer/<int:c_id>/block")
+@requires_admin
+def block_customer(c_id):
+    customer = Customer.query.filter_by(c_id = c_id).first()
+    customer.c_blocked = True
+    db.session.commit()
+    flash("Customer Blocked Successfully")
+    return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/customer/<int:c_id>/unblock")
+@requires_admin
+def unblock_customer(c_id):
+    customer = Customer.query.filter_by(c_id = c_id).first()
+    customer.c_blocked = False
+    db.session.commit()
+    flash("Customer Unblocked Successfully")
+    return redirect(url_for("main.dashboard"))
+
 @my_blueprint.route("/service_provider/<int:provider_id>/unblock")
 @requires_admin
 def unblock_service_provider(provider_id):
@@ -670,6 +694,17 @@ def delete_service_provider(provider_id):
     flash("Service Provider Deleted Successfully")
     return redirect(url_for("main.dashboard"))
 
+@my_blueprint.route("/customer/<int:c_id>/delete")
+@requires_admin
+def delete_customer(c_id):
+    customer = Customer.query.filter_by(c_id = c_id).first()
+    user = User.query.filter_by(u_id = customer.c_user_id).first()
+    db.session.delete(user)
+    db.session.delete(customer)
+    db.session.commit()
+    flash("Customer Deleted Successfully")
+    return redirect(url_for("main.dashboard"))
+
 @my_blueprint.route("/service_provider/<int:provider_id>/")
 @requires_login
 def view_service_provider(provider_id):
@@ -685,6 +720,10 @@ def view_service_provider(provider_id):
 def accept_request(sr_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 2:
+        service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
+        if service_provider.p_blocked:
+            flash("You are blocked by admin. Please contact admin for further details")
+            return redirect(url_for("main.dashboard"))
         service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
         service_request.sr_status = "Assigned"
         db.session.commit()
@@ -756,6 +795,7 @@ def blocked():
 def professional_list(s_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 1:
+        customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         service = Service.query.filter_by(s_id = s_id).first()
         service_providers = ServiceProvider.query.filter_by(p_service_id = s_id).all()
         service_providers_and_ratings = []
@@ -768,7 +808,7 @@ def professional_list(s_id):
             service_providers_and_ratings.append((service_provider, average_rating))
         
         if service_providers_and_ratings:
-            return render_template("professional_list.html", service=service, service_providers_and_ratings=service_providers_and_ratings, user_role = user.u_role)
+            return render_template("professional_list.html", service=service, service_providers_and_ratings=service_providers_and_ratings, user_role = user.u_role, customer = customer)
         else:
             return render_template("No_Professional_Available.html", service=service, user_role = user.u_role)
 

@@ -38,7 +38,12 @@
                     <td style="text-align: center; vertical-align:middle">&#8377 {{ service.s_rate * service.s_time_required }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider[1] }}</td>
                     <td  style="text-align: center; vertical-align:middle">
+                        {% if customer.c_blocked == False %}
                         <a href="{{ url_for('main.service_request', s_id=service.s_id) }}" class="btn btn-outline-success">Request Service</a>
+                        {% else %}
+                        <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-secondary" >Request Service</a>
+                        {% endif %}
+                        
                     </td>
                 </tr>
             {% endfor %}

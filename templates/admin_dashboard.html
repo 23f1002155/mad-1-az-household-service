@@ -123,11 +123,11 @@
                         <td style="text-align: center; vertical-align:middle">{{ customer.c_pincode }}</td>
                         <td  style="text-align: center; vertical-align:middle">{{ customer.c_blocked }}</td> 
                         <td  style="text-align: center; vertical-align:middle">
-                            <a href="/customer/{{ customer.c_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                            <a href="url_for('main.delete_customer', c_id = customer.c_id)" class="btn btn-outline-danger">Delete</a>
                             {% if customer.c_blocked == False %}
-                                <a href="/customer/{{ customer.c_id }}/block" class="btn btn-outline-secondary">Block</a>
+                                <a href="url_for('main.block_customer', c_id = customer.c_id)" class="btn btn-outline-success">Block</a>
                             {% else %}
-                                <a href="/customer/{{ customer.c_id }}/unblock" class="btn btn-outline-secondary">Unlock</a> 
+                                <a href="/customer/{{ customer.c_id }}/unblock" class="btn btn-outline-secondary">Unblock</a> 
                             {% endif %}
                             
                         </td>

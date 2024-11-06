@@ -15,19 +15,24 @@
 
 </head>
 <body style="background-color: rgb(240, 240, 240);">
-  <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, rgb(46, 139, 87), rgb(0, 128, 128)); border-radius: 18px">
+  <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to bottom right, rgb(17, 157, 106), rgb(0, 133, 133));">
     <div class="container-fluid">
       <span class="navbar-text">
       <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
       </span>
           <div class="navbar-nav ms-auto"></div>
-            <a class="nav-link me-3" href="/">Home</a>
-            <a class="nav-link me-3" href="/login">Login</a>
-            <a class="nav-link me-3" href="/sign-up-customer">Sign Up for Customer</a>
-            <a class="nav-link me-3" href="/sign-up-serviceprovider">Sign Up for Professional</a>
+            <b><a class="nav-link me-3" href="/">Home</a></b>
+            <b><a class="nav-link me-3" href="/login">Login</a></b>
+            <b><a class="nav-link me-3" href="/sign-up-customer">Sign Up for Customer</a></b>
+            <b><a class="nav-link me-3" href="/sign-up-serviceprovider">Sign Up for Professional</a></b>
           </div>
         </div>
       </nav>
+      <style>
+        .nav-link:hover {
+          color: white;
+        }
+      </style>
     {% block content %}
         
     {% endblock %}
