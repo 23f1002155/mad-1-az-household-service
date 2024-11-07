@@ -207,7 +207,8 @@ def dashboard():
         services = Service.query.all()
         services_providers = ServiceProvider.query.all()
         customers = Customer.query.all()
-        return render_template("admin_dashboard.html" , services = services, services_providers = services_providers, customers = customers, user_role = user.u_role)
+        categories = ServiceCategory.query.all()
+        return render_template("admin_dashboard.html" , services = services, services_providers = services_providers, customers = customers, categories = categories, user_role = user.u_role)
     elif user.u_role == 1:
         customer = Customer.query.filter_by(c_user_id = session["user_id"]).first()
         service_requests = ServiceRequest.query.filter_by(sr_customer_id = customer.c_id).all()
@@ -383,11 +384,14 @@ def update_password():
             return redirect(url_for("main.update_password"))
         
         if not check_password_hash(user.u_passhash, current_password):
-            flash("Invalid Password")
+            flash("Invalid Current Password")
             return redirect(url_for("main.update_password"))
         
         if new_password != confirm_password:
             flash("Passwords do not match")
+            return redirect(url_for("main.update_password"))
+        if current_password == new_password:
+            flash("Current Password and New Password Cannot be Same")
             return redirect(url_for("main.update_password"))
         
         new_passhash = generate_password_hash(new_password)
@@ -578,12 +582,40 @@ def edit_service(service_id):
         flash("Service Updated Successfully")
         return redirect(url_for("main.dashboard"))
 
+@my_blueprint.route("/service_category/<int:sc_id>/edit", methods = ["GET", "POST"])
+@requires_admin
+def edit_service_category(sc_id):
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    service_category = ServiceCategory.query.filter_by(sc_id = sc_id).first()
+    if request.method == "GET":
+        return render_template("edit_category.html", user_role = user.u_role, service_category = service_category)
+    elif request.method == "POST":
+        sc_name = request.form.get("sc_name")
+        if not sc_name:
+            flash("Please Enter the Service Category Name")
+            return redirect(url_for("main.edit_service_category"))
+
+        service_category.sc_name = sc_name
+        db.session.commit()
+        flash("Service Category edited Successfully")
+        return redirect(url_for("main.dashboard"))
+
+
 
 @my_blueprint.route("/service/<int:service_id>/delete")
 @requires_admin
 def delete_service(service_id):
     service = Service.query.filter_by(s_id = service_id).first()
     db.session.delete(service)
+    db.session.commit()
+    flash("Service Deleted Successfully")
+    return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_category/<int:sc_id>/delete")
+@requires_admin
+def delete_service_category(sc_id):
+    service_category = ServiceCategory.query.filter_by(sc_id = sc_id).first()
+    db.session.delete(service_category)
     db.session.commit()
     flash("Service Deleted Successfully")
     return redirect(url_for("main.dashboard"))
@@ -610,6 +642,23 @@ def add_service():
         db.session.add(new_service)
         db.session.commit()
         flash("Service Added Successfully")
+        return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_category/add", methods = ["GET", "POST"])
+@requires_admin
+def add_category():
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if request.method == "GET":
+        return render_template("add_category.html", user_role = user.u_role)
+    elif request.method == "POST":
+        sc_name = request.form.get("sc_name")
+        if not sc_name:
+            flash("Please Enter the Service Category Name")
+            return redirect(url_for("main.add_category"))
+        service_catergory = ServiceCategory(sc_name = sc_name)
+        db.session.add(service_catergory)
+        db.session.commit()
+        flash("Service Category Added Successfully")
         return redirect(url_for("main.dashboard"))
 
 @my_blueprint.route("/service_request/<int:s_id>")

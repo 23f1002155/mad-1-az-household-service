@@ -1,0 +1,30 @@
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
+{% block name %}
+    Edit Service Category
+{% endblock %}
+
+{% block content %}
+    {% include 'flashmessage.html'   %}
+    <div class="container" style="height:510px;">
+        <h1>Edit Service Category</h1>
+        <div class="col-md-12">
+            <div class="group-item">
+                <div style="display: flex; justify-content:space-between; align-items:center;">
+                    <form class="row g-3" method = "POST" action="">
+                        <div class="form-group">
+                            <label for="s_name" class="form-label">Service Category Name:</label>
+                            <input type="text" class="form-control" name="sc_name" value="{{ service_category.sc_name }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-outline-success col-md-4">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
