@@ -22,29 +22,30 @@
             </thead>
             <tbody>
                 {% set count = namespace(value=1) %}
-                {% set grand_total = namespace(value=0) %}
                 {% for cart in carts %}
                 <tr>
                     <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ cart.service.s_name }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ cart.service_provider.p_name }}</td>
-                    <td style="text-align: center; vertical-align:middle">{{ cart.service.s_rate }}</td>
+                    <td style="text-align: center; vertical-align:middle">&#8377 {{ cart.service.s_rate }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ cart.service.s_time_required }}</td>
-                    <td style="text-align: center; vertical-align:middle">{{ cart.service.s_rate * cart.service.s_time_required }}</td>
+                    <td style="text-align: center; vertical-align:middle">&#8377 {{ cart.service.s_rate * cart.service.s_time_required }}</td>
                     <td style="text-align: center; vertical-align:middle">
                         <a href="{{ url_for('main.remove_from_cart', cart_id= cart.cart_id) }}" class="btn btn-outline-danger">Remove</a>
                     </td>
                     {% set count.value = count.value + 1 %}
-                    {% set grand_total.value = grand_total.value + (cart.service.s_rate * cart.service.s_time_required) %}
                 </tr>
                 {% endfor %}
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align: center; vertical-align:middle"><b>Grand Total</b></td>
+                    <td style="text-align: center; vertical-align:middle"><strong>&#8377 {{ total }}</strong></td>
+                    <td style="text-align: center; vertical-align:middle">
+                        <a href="{{ url_for('main.checkout') }}" class="btn btn-outline-success">Check Out</a>
+                    </td>
+                </tr>
         </table>
-        <div class="group-item" style="display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin-right: 20px;">
-
-            <h3><b>Grand Total:</b> &#8377 {{ grand_total.value }}</h3>
-            <a href="#" class="btn btn-outline-success">Place Order</a>
-        </div>
         {% else %}
         <h1 style="margin-left: 450px;margin-top:250px; margin-bottom:100px">No Item in Cart</h1>
         {% endif %}

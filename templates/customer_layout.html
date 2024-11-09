@@ -22,11 +22,11 @@
       <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
       </span>
       
-      <form action="{{ url_for('main.search_from_header') }}" method="get" class="inline">
+      <form action="{{ url_for('main.search_from_header') }}" method="get" class="inline" style="margin-right:-100px">
         <div class="form-group row" style="margin-left: 220px; margin-top:-20px">
-        <div class="col-md-4" style="margin-top:0px;margin-left:-190px">
+        <div class="col-md-4" style="margin-top:0px;margin-left:-190px; size:10%">
         <label for="parameter"></label>
-        <select class="form-control" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
+        <select class="parameter form-select" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
         <option value="parameter" selected>Search By...</option>
         <option value="p_name">Professional Name</option>
         <option value="p_pincode">Pincode</option>
@@ -51,7 +51,7 @@
 
       <div class="navbar-nav ms-auto">
         <b><a class="nav-link" href="{{ url_for('main.home') }}"><i class="bi bi-house-fill"></i> Home</a></b>
-        <a class="nav-link" href="/profile"><i class="bi bi-person-fill"></i> <b>Profile</b></a>
+        <a class="nav-link" href="/profile"><i class="bi bi-person-circle"></i> <b>Profile</b></a>
         <b><a class="nav-link" href="{{ url_for('main.cart') }}"><i class="bi bi-cart-fill"></i> Cart</a></b>
         <b><a class="nav-link" href="{{ url_for('main.summary') }}"><i class="bi bi-pie-chart-fill"></i> Summary</a></b>
         <a class="btn btn-outline-light logout-btn" href="{{ url_for('main.logout')}}"><i class="bi bi-box-arrow-right"></i> <b>Logout</b></a>

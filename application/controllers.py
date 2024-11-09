@@ -262,6 +262,12 @@ def dashboard():
         service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
         service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id).all()
         service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id).all()
+        if not service_requests:
+            flash("No Service Requests")
+            return redirect(url_for("main.profile"))
+        if not service_feedbacks:
+            flash("No Feedbacks")
+            return redirect(url_for("main.profile"))
 
         return render_template("service_provider_dashboard.html", service_feedbacks = service_feedbacks, service_requests = service_requests, user_role = user.u_role)
 
@@ -431,9 +437,10 @@ def search():
 def search_from_header():
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 1:
+        customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         parameter = request.args.get("parameter")
         query = request.args.get("query").strip()
-        service_providers = ServiceProvider.query.all()
+        service_providers = ServiceProvider.query.filter_by(p_approved = True, p_blocked = False).all()
 
         service_providers_and_ratings = []
         for service_provider in service_providers:
@@ -730,23 +737,30 @@ def add_category():
         flash("Service Category Added Successfully")
         return redirect(url_for("main.dashboard"))
 
-@my_blueprint.route("/service_request/<int:p_id>/request")
+@my_blueprint.route("/service_request", methods = ["POST"])
 @requires_login
-def service_request(p_id):
+def service_request():
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 1:
         sr_customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         if sr_customer.c_blocked:
             flash("You are blocked by admin. Please contact admin for further details")
             return redirect(url_for("main.dashboard"))
-        sr_service_provider = ServiceProvider.query.filter_by(p_id = p_id).first()
-        service = Service.query.filter_by(s_id = sr_service_provider.p_service_id).first()
-        sr_status = "Requested"
-        sr_date_time = str(datetime.now(tz=None))
-        new_sr_date_time = datetime.strptime(sr_date_time.split('.')[0], '%Y-%m-%d %H:%M:%S')
-        new_service_request = ServiceRequest(sr_customer_id = sr_customer.c_id, sr_customer_name = sr_customer.c_name, sr_customer_fullname = sr_customer.c_fname + " " + sr_customer.c_lname, sr_customer_email = sr_customer.c_email, sr_service_provider_id = sr_service_provider.p_id, sr_service_provider_name = sr_service_provider.p_name, sr_service_provider_fullname = sr_service_provider.p_fname + " " + sr_service_provider.p_lname, sr_service_provider_email = sr_service_provider.p_email, sr_service_provider_contact_number = sr_service_provider.p_contact_number, sr_service_id = sr_service_provider.p_service_id, sr_service_name = service.s_name, sr_status = sr_status, sr_date_time = new_sr_date_time)
-        db.session.add(new_service_request)
+        t_date_time = request.form.get("sr_date_time")
+        new_t_date_time = datetime.strptime(t_date_time, '%d %B %Y %I:%M %p')
+        new_transaction = Transaction(t_customer_id = sr_customer.c_id, t_date_time = new_t_date_time)
+        db.session.add(new_transaction)
         db.session.commit()
+        carts = Cart.query.filter_by(cart_customer_id = sr_customer.c_id).all()
+        for cart in carts:
+            sr_service_provider_fullname = cart.service_provider.p_fname + " " + cart.service_provider.p_lname
+            sr_customer_fullname = sr_customer.c_fname + " " + sr_customer.c_lname
+            new_service_request = ServiceRequest( sr_transaction_id = new_transaction.t_id, sr_customer_id = sr_customer.c_id, sr_customer_name = sr_customer.c_name, sr_customer_email = sr_customer.c_email, sr_customer_fullname = sr_customer_fullname, sr_address = sr_customer.c_address, sr_city = sr_customer.c_city, sr_pincode = sr_customer.c_pincode, sr_service_id = cart.service.s_id, sr_service_name = cart.service.s_name, sr_date_time = new_t_date_time, sr_status = "Requested", sr_service_provider_id = cart.service_provider.p_id, sr_service_provider_name = cart.service_provider.p_name, sr_service_provider_fullname = sr_service_provider_fullname, sr_service_provider_email = cart.service_provider.p_email, sr_service_provider_contact_number = cart.service_provider.p_contact_number)
+            db.session.add(new_service_request)
+            db.session.delete(cart)
+        db.session.commit()
+
+
         flash("Service Requested Successfully")
         return redirect(url_for("main.dashboard"))
     elif user.u_role == 2:
@@ -875,8 +889,8 @@ def service_completed(sr_id):
             service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
             service_provider = ServiceProvider.query.filter_by(p_id = service_request.sr_service_provider_id).first()
             service = Service.query.filter_by(s_id = service_request.sr_service_id).first()
-            completion_date_time = str(datetime.now(tz=None))
-            new_completion_date_time = datetime.strptime(completion_date_time.split('.')[0], '%Y-%m-%d %H:%M:%S')
+            completion_date_time = datetime.now(tz=None)
+            new_completion_date_time = completion_date_time.strftime('%d %b %Y %I:%M %p')
             return render_template("feedback.html", service_request = service_request, service_provider = service_provider, service = service, completion_date_time = new_completion_date_time, user_role = user.u_role)
         elif request.method == "POST":
             service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
@@ -894,7 +908,7 @@ def service_completed(sr_id):
             new_service_feedback = ServiceFeedback(sf_service_request_id = sf_service_request_id, sf_rating = sf_rating, sf_customer_id = sf_customer_id, sf_service_provider_id = sf_service_provider_id, sf_feedback = sf_feedback)
             service_request.sr_status = "Closed"
             completion_date_time_str = request.form.get("completion_date_time")
-            service_request.sr_date_time = datetime.strptime(completion_date_time_str.split('.')[0], '%Y-%m-%d %H:%M:%S')
+            service_request.sr_date_time = datetime.strptime(completion_date_time_str, '%d %b %Y %I:%M %p')
             db.session.add(new_service_feedback)
             db.session.commit()
             flash("Service Request Completed Successfully")
@@ -916,7 +930,9 @@ def professional_list(s_id):
     if user.u_role == 1:
         customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         service = Service.query.filter_by(s_id = s_id).first()
-        service_providers = ServiceProvider.query.filter_by(p_service_id = s_id, p_approved = True).all()
+        carts = Cart.query.filter_by(cart_customer_id = customer.c_id).all()
+        cart_professional_ids = [cart.cart_service_provider_id for cart in carts]
+        service_providers = ServiceProvider.query.filter_by(p_service_id = s_id, p_approved = True, p_city = customer.c_city).all()
         service_providers_and_ratings = []
         for service_provider in service_providers:
             feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()
@@ -926,8 +942,9 @@ def professional_list(s_id):
                 average_rating = "No Ratings"
             service_providers_and_ratings.append((service_provider, average_rating))
         
+        service_providers_and_ratings = sorted(service_providers_and_ratings, key = lambda x: x[1], reverse = True)
         if service_providers_and_ratings:
-            return render_template("professional_list.html", service=service, service_providers_and_ratings=service_providers_and_ratings, user_role = user.u_role, customer = customer)
+            return render_template("professional_list.html", service=service, service_providers_and_ratings=service_providers_and_ratings, user_role = user.u_role, customer = customer, cart_professional_ids = cart_professional_ids, carts = carts)
         else:
             return render_template("No_Professional_Available.html", service=service, user_role = user.u_role)
 
@@ -946,7 +963,8 @@ def cart():
     if user.u_role == 1:
         customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         carts = Cart.query.filter_by(cart_customer_id = customer.c_id).all()
-        return render_template("cart.html", carts = carts, user_role = user.u_role)
+        total = sum([(cart.service.s_rate * cart.service.s_time_required) for cart in carts])
+        return render_template("cart.html", carts = carts, user_role = user.u_role, total = total)
     elif user.u_role == 2:
         flash("Professionals do not have a cart")
         return redirect(url_for("main.dashboard"))
@@ -980,7 +998,16 @@ def add_to_cart(p_id):
 def remove_from_cart(cart_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 1:
+        customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         cart = Cart.query.filter_by(cart_id = cart_id).first()
+        if not cart:
+            flash("Service not found in cart")
+            return redirect(url_for("main.cart"))
+        
+        if cart.cart_customer_id != customer.c_id:
+            flash("You do not have permission to remove this service from cart")
+            return redirect(url_for("main.cart"))
+        
         db.session.delete(cart)
         db.session.commit()
         flash("Service Removed from Cart Successfully")
@@ -992,3 +1019,22 @@ def remove_from_cart(cart_id):
         flash("Admin does not have a cart")
         return redirect(url_for("main.dashboard"))
 
+@my_blueprint.route("/checkout")
+@requires_login
+def checkout():
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 1:
+        customer = Customer.query.filter_by(c_user_id = user.u_id).first()
+        carts = Cart.query.filter_by(cart_customer_id = customer.c_id).all()
+        if not carts:
+            flash("Cart is Empty")
+            return redirect(url_for("main.dashboard"))
+        total = sum([(cart.service.s_rate * cart.service.s_time_required) for cart in carts])
+        current_date_time = datetime.now(tz=None).strftime('%d %B %Y %I:%M %p')
+        return render_template("checkout.html", carts = carts, user_role = user.u_role, total = total, current_date_time = current_date_time, customer = customer)
+    elif user.u_role == 2:
+        flash("Professionals cannot Checkout")
+        return redirect(url_for("main.dashboard"))
+    elif user.u_role == 0:
+        flash("Admin cannot Checkout")
+        return redirect(url_for("main.dashboard"))

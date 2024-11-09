@@ -38,11 +38,25 @@
                     <td style="text-align: center; vertical-align:middle">&#8377 {{ service.s_rate * service.s_time_required }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider[1] }}</td>
                     <td  style="text-align: center; vertical-align:middle">
-                        {% if customer.c_blocked == False %}
-                        <a href="{{ url_for('main.add_to_cart', p_id= service_provider[0].p_id) }}" class="btn btn-outline-success">Add to Cart</a>
+                    {% set in_cart = service_provider[0].p_id in cart_professional_ids %}
+                    {% set cart_index = cart_professional_ids.index(service_provider[0].p_id) if in_cart else None %}
+                    {% set cart_id = carts[cart_index].cart_id if in_cart else None %}
+                    {% set blocked = customer.c_blocked %}
+                    
+                    {% if in_cart and cart_id is not none %}
+                        {% if not blocked %}
+                            <a href="{{ url_for('main.remove_from_cart', cart_id=cart_id) }}" class="btn btn-outline-danger">Remove from Cart</a>
                         {% else %}
-                        <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-secondary" >Request Service</a>
+                            <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-danger">Remove From Cart</a>
                         {% endif %}
+                    {% else %}
+                        {% if not blocked %}
+                            <a href="{{ url_for('main.add_to_cart', p_id=service_provider[0].p_id) }}" class="btn btn-outline-success">Add to Cart</a>
+                        {% else %}
+                            <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-secondary">Add to Cart</a>
+                        {% endif %}
+                    {% endif %}
+                        
                         
                     </td>
                 </tr>

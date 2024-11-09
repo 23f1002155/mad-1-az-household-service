@@ -78,7 +78,7 @@ class Service(db.Model):
 class ServiceRequest(db.Model):
     __tablename__ = "service_request_database"
     sr_id = db.Column(db.Integer, primary_key = True)
-    sr_service_request_id = db.Column(db.Integer, nullable = False)
+    sr_transaction_id = db.Column(db.Integer, db.ForeignKey('transaction_database.t_id'))
     sr_service_id = db.Column(db.Integer, nullable = False)
     sr_service_name = db.Column(db.String, nullable = False)
     sr_service_provider_id = db.Column(db.Integer, nullable = False)
@@ -96,6 +96,7 @@ class ServiceRequest(db.Model):
     sr_date_time = db.Column(db.DateTime, nullable = False)
     sr_status = db.Column(db.String, nullable = False)
 
+    transaction = db.relationship("Transaction", backref = "service_request_database", lazy = True)
 
 class Cart(db.Model):
     __tablename__ = "cart_database"
@@ -107,6 +108,12 @@ class Cart(db.Model):
     customer = db.relationship("Customer", backref = "cart_database", lazy = True)
     service = db.relationship("Service", backref = "cart_database", lazy = True)
     service_provider = db.relationship("ServiceProvider", backref = "cart_database", lazy = True)
+
+class Transaction(db.Model):
+    __tablename__ = "transaction_database"
+    t_id = db.Column(db.Integer, primary_key = True)
+    t_customer_id = db.Column(db.Integer, nullable = False)
+    t_date_time = db.Column(db.DateTime, nullable = False)
 
 class ServiceFeedback(db.Model):
     __tablename__ = "service_feedback_database"
