@@ -25,6 +25,8 @@ class Customer(db.Model):
     c_id = db.Column(db.Integer, primary_key = True)
     c_name = db.Column(db.String, nullable = False)
     c_email = db.Column(db.String, nullable = False)
+    c_fname = db.Column(db.String, nullable = False)
+    c_lname = db.Column(db.String, nullable = False)
     c_address = db.Column(db.String, nullable = False)
     c_city = db.Column(db.String, nullable = False)
     c_pincode = db.Column(db.Integer, nullable = False)
@@ -38,6 +40,8 @@ class ServiceProvider(db.Model):
     p_id = db.Column(db.Integer, primary_key = True)
     p_name = db.Column(db.String, nullable = False)
     p_email = db.Column(db.String, nullable = False)
+    p_fname = db.Column(db.String, nullable = True)
+    p_lname = db.Column(db.String, nullable = True)
     p_contact_number = db.Column(db.Integer, nullable = False)
     p_experience = db.Column(db.Integer, nullable = False)
     p_verification_document = db.Column(db.String, nullable = False)
@@ -70,18 +74,28 @@ class Service(db.Model):
 
     category = db.relationship("ServiceCategory", backref = "service_database", lazy = True)
 
+
 class ServiceRequest(db.Model):
     __tablename__ = "service_request_database"
     sr_id = db.Column(db.Integer, primary_key = True)
-    sr_customer_id = db.Column(db.Integer, db.ForeignKey('customer_database.c_id'))
-    sr_service_provider_id = db.Column(db.Integer, db.ForeignKey('service_provider_database.p_id'))
-    sr_service_id = db.Column(db.Integer, db.ForeignKey('service_database.s_id'))
-    sr_status = db.Column(db.String, nullable = False)
+    sr_service_request_id = db.Column(db.Integer, nullable = False)
+    sr_service_id = db.Column(db.Integer, nullable = False)
+    sr_service_name = db.Column(db.String, nullable = False)
+    sr_service_provider_id = db.Column(db.Integer, nullable = False)
+    sr_service_provider_name = db.Column(db.String, nullable = False)
+    sr_service_provider_fullname = db.Column(db.String, nullable = False)
+    sr_service_provider_email = db.Column(db.String, nullable = False)
+    sr_service_provider_contact_number = db.Column(db.Integer, nullable = False)
+    sr_customer_id = db.Column(db.Integer, nullable = False)
+    sr_customer_name = db.Column(db.String, nullable = False)
+    sr_customer_fullname = db.Column(db.String, nullable = False)
+    sr_customer_email = db.Column(db.String, nullable = False)
+    sr_address = db.Column(db.String, nullable = False)
+    sr_city = db.Column(db.String, nullable = False)
+    sr_pincode = db.Column(db.Integer, nullable = False)
     sr_date_time = db.Column(db.DateTime, nullable = False)
+    sr_status = db.Column(db.String, nullable = False)
 
-    customer = db.relationship("Customer", backref = "service_request_database", lazy = True)
-    service_provider = db.relationship("ServiceProvider", backref = "service_request_database", lazy = True)
-    service = db.relationship("Service", backref = "service_request_database", lazy = True)
 
 class Cart(db.Model):
     __tablename__ = "cart_database"

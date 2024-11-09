@@ -179,6 +179,7 @@
                             <th style="text-align: center; vertical-align:middle">Service Request Id</th>
                             <th style="text-align: center; vertical-align:middle">Professional Name</th>
                             <th style="text-align: center; vertical-align:middle">Customer Name</th>
+                            <th style="text-align: center; vertical-align:middle">Service Name</th>
                             <th style="text-align: center; vertical-align:middle">Service Request Date and Time</th>
                             <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
                             <th style="text-align: center; vertical-align:middle">Service Status</th>
@@ -190,10 +191,11 @@
                         <tr>
                             <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
-                            <td style="text-align: center; vertical-align:middle">{{ service_request.service_provider.p_name }}</td>
-                            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_name }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_service_provider_name }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_customer_name }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_service_name }}</td>
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
-                            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                             {% set count.value = count.value + 1 %}
                         </tr>

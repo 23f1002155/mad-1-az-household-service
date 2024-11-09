@@ -88,6 +88,8 @@ def sign_up_customer():
     elif request.method == "POST":
         c_name = request.form.get("inputName")
         c_email = request.form.get("inputEmail4")
+        c_fname = request.form.get("inputFirstName")
+        c_lname = request.form.get("inputLastName")
         c_password = request.form.get("inputPassword4")
         c_confirm_password = request.form.get("inputConfirmPassword4")
         c_address = request.form.get("inputAddress")
@@ -95,23 +97,40 @@ def sign_up_customer():
         c_pincode = request.form.get("inputZip")
         blocked = False
 
-        if not c_name or not c_email or not c_password or not c_confirm_password or not c_city or not c_pincode or not c_address:
+        if not c_name or not c_email or not c_password or not c_confirm_password or not c_city or not c_pincode or not c_address or not c_fname or not c_lname:
             flash("All fields are required")
             return redirect(url_for("main.sign_up_customer"))
+        if " " in c_name:
+            flash("Username cannot have spaces")
+            return redirect(url_for("main.sign_up_customer"))
+        
+        if ' ' in c_email:
+            flash("Email cannot have spaces")
+            return redirect(url_for("main.sign_up_customer"))
+        
+        if len(c_password) < 8:
+            flash("Password should be atleast 8 characters long")
+            return redirect(url_for("main.sign_up_customer"))
+        
         if c_password != c_confirm_password:    
             flash("Passwords do not match")
             return redirect(url_for("main.sign_up_customer"))
         
-        user = User.query.filter_by(u_name = c_name).first()
+        username = User.query.filter_by(u_name = c_name).first()
         user_email = User.query.filter_by(u_email = c_email).first()
-        if user or user_email:
+
+        if username:
+            flash("Username already exists")
+            return redirect(url_for("main.sign_up_customer"))
+        if user_email:
             flash("Email already exists")
             return redirect(url_for("main.sign_up_customer"))
         else:
             passhash = generate_password_hash(c_password)
             new_user = User(u_name = c_name, u_email = c_email, u_passhash = passhash, u_role = 1)
-            new_customer = Customer(c_name = c_name, c_email = c_email, c_address = c_address, c_city = c_city, c_pincode = c_pincode, c_user_id = new_user.u_id, c_blocked = blocked)
             db.session.add(new_user)
+            db.session.commit()
+            new_customer = Customer(c_name = c_name, c_email = c_email, c_fname = c_fname, c_lname = c_lname, c_address = c_address, c_city = c_city, c_pincode = c_pincode, c_user_id = new_user.u_id, c_blocked = blocked)
             db.session.add(new_customer)
             db.session.commit()
             flash("Account Created Successfully")
@@ -127,44 +146,64 @@ def sign_up_serviceprovider():
         services = Service.query.all()
         return render_template("sign-up-serviceprovider.html", services = services)
     elif request.method == "POST":
-        username = request.form.get("inputName")
-        email = request.form.get("inputEmail4")
-        password = request.form.get("inputPassword4")
-        confirm_password = request.form.get("inputConfirmPassword4")
-        contact_number = request.form.get("inputPhone")
-        service_id= request.form.get("inputService")
-        experience = request.form.get("inputExperience")
-        verfiication_document = request.files.get("inputVerificationDocument")
-        if not verfiication_document:
+        p_name = request.form.get("inputName")
+        p_email = request.form.get("inputEmail4")
+        p_fname = request.form.get("inputFirstName")
+        p_lname = request.form.get("inputLastName")
+        p_password = request.form.get("inputPassword4")
+        p_confirm_password = request.form.get("inputConfirmPassword4")
+        p_contact_number = request.form.get("inputPhone")
+        p_service_id= request.form.get("inputService")
+        p_experience = request.form.get("inputExperience")
+        p_verfiication_document = request.files.get("inputVerificationDocument")
+        if not p_verfiication_document:
             flash("Please upload a verification document")
             return redirect(url_for("main.sign_up_serviceprovider"))
         else:
-            verfiication_document.save(f"static/verification/{verfiication_document.filename}")
-        address = request.form.get("inputAddress")
-        city = request.form.get("inputCity")
-        pincode = request.form.get("inputZip")
-        approved = False
-        blocked = False
+            p_verfiication_document.save(f"static/verification/{p_verfiication_document.filename}")
+        p_address = request.form.get("inputAddress")
+        p_city = request.form.get("inputCity")
+        p_pincode = request.form.get("inputZip")
+        p_approved = False
+        p_blocked = False
 
-        if not username or not email or not password or not confirm_password or not contact_number or not service_id or not experience or not address or not city or not pincode:
+        if not p_name or not p_email or not p_password or not p_confirm_password or not p_contact_number or not p_service_id or not p_experience or not p_address or not p_city or not p_pincode or not p_fname or not p_lname:
             flash("All fields are required")
             return redirect(url_for("main.sign_up_serviceprovider"))
-        if password != confirm_password:    
+        
+        if " " in p_name:
+            flash("Username cannot have spaces")
+            return redirect(url_for("main.sign_up_serviceprovider"))
+        
+        if ' ' in p_email:
+            flash("Email cannot have spaces")
+            return redirect(url_for("main.sign_up_serviceprovider"))
+        
+        if len(p_password) < 8:
+            flash("Password should be atleast 8 characters long")
+            return redirect(url_for("main.sign_up_serviceprovider"))
+        
+        if p_password != p_confirm_password:    
             flash("Passwords do not match")
             return redirect(url_for("main.sign_up_serviceprovider"))
         
-        user = User.query.filter_by(u_email = email).first()
-        if user:
+        username = User.query.filter_by(u_name = p_name).first()
+        if username:
+            flash("Username already exists")
+            return redirect(url_for("main.sign_up_serviceprovider"))
+
+        useremail = User.query.filter_by(u_email = p_email).first()
+        if useremail:
             flash("Email already exists")
             return redirect(url_for("main.sign_up_serviceprovider"))
         
-        passhash = generate_password_hash(password)
+        passhash = generate_password_hash(p_password)
 
-        new_user = User(u_name = username, u_email = email, u_passhash = passhash, u_role = 2)
+        new_user = User(u_name = p_name, u_email = p_email, u_passhash = passhash, u_role = 2)
         
         db.session.add(new_user)
         db.session.commit()
-        new_provider = ServiceProvider(p_name = username, p_email = email, p_contact_number = contact_number, p_experience = experience, p_city = city, p_pincode = pincode, p_user_id = new_user.u_id, p_service_id = service_id, p_approved = approved, p_blocked = blocked, p_verification_document = verfiication_document.filename, p_address = address)
+        new_provider = ServiceProvider(p_name = p_name, p_email = p_email, p_fname = p_fname, p_lname = p_lname, p_contact_number = p_contact_number, p_experience = p_experience, p_city = p_city, p_pincode = p_pincode, p_user_id = new_user.u_id, p_service_id = p_service_id, p_approved = p_approved, p_blocked = p_blocked, p_verification_document = p_verfiication_document.filename, p_address = p_address)
         db.session.add(new_provider)
         db.session.commit()
         flash("Account Created Successfully")
@@ -452,11 +491,11 @@ def search_from_header():
         if parameter == "sr_id":
             search_result = [request for request in service_requests if int(query) == request.sr_id]
         elif parameter == "customer_name":
-            search_result = [request for request in service_requests if query.lower() in request.customer.c_name.lower()]
+            search_result = [request for request in service_requests if query.lower() in request.sr_customer_name.lower()]
         elif parameter == "customer_city":
-            search_result = [request for request in service_requests if query.lower() in request.customer.c_city.lower()]
+            search_result = [request for request in service_requests if query.lower() in request.sr_city.lower()]
         elif parameter == "customer_pincode":
-            search_result = [request for request in service_requests if int(query) == request.customer.c_pincode]
+            search_result = [request for request in service_requests if int(query) == request.sr_pincode]
         elif parameter == "sr_date_time":
             search_result = [request for request in service_requests if query in str(request.sr_date_time)]
         elif parameter == "sr_status":
@@ -691,7 +730,7 @@ def add_category():
         flash("Service Category Added Successfully")
         return redirect(url_for("main.dashboard"))
 
-@my_blueprint.route("/service_request/<int:p_id>")
+@my_blueprint.route("/service_request/<int:p_id>/request")
 @requires_login
 def service_request(p_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
@@ -701,10 +740,11 @@ def service_request(p_id):
             flash("You are blocked by admin. Please contact admin for further details")
             return redirect(url_for("main.dashboard"))
         sr_service_provider = ServiceProvider.query.filter_by(p_id = p_id).first()
+        service = Service.query.filter_by(s_id = sr_service_provider.p_service_id).first()
         sr_status = "Requested"
         sr_date_time = str(datetime.now(tz=None))
         new_sr_date_time = datetime.strptime(sr_date_time.split('.')[0], '%Y-%m-%d %H:%M:%S')
-        new_service_request = ServiceRequest(sr_customer_id = sr_customer.c_id, sr_service_provider_id = sr_service_provider.p_id, sr_service_id = sr_service_provider.p_service_id, sr_status = sr_status, sr_date_time = new_sr_date_time)
+        new_service_request = ServiceRequest(sr_customer_id = sr_customer.c_id, sr_customer_name = sr_customer.c_name, sr_customer_fullname = sr_customer.c_fname + " " + sr_customer.c_lname, sr_customer_email = sr_customer.c_email, sr_service_provider_id = sr_service_provider.p_id, sr_service_provider_name = sr_service_provider.p_name, sr_service_provider_fullname = sr_service_provider.p_fname + " " + sr_service_provider.p_lname, sr_service_provider_email = sr_service_provider.p_email, sr_service_provider_contact_number = sr_service_provider.p_contact_number, sr_service_id = sr_service_provider.p_service_id, sr_service_name = service.s_name, sr_status = sr_status, sr_date_time = new_sr_date_time)
         db.session.add(new_service_request)
         db.session.commit()
         flash("Service Requested Successfully")
@@ -840,7 +880,7 @@ def service_completed(sr_id):
             return render_template("feedback.html", service_request = service_request, service_provider = service_provider, service = service, completion_date_time = new_completion_date_time, user_role = user.u_role)
         elif request.method == "POST":
             service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
-            sf_service_request_id = service_request.sr_service_provider_id
+            sf_service_request_id = sr_id
             sf_rating = request.form.get("service_rating")
             sf_customer_id  = service_request.sr_customer_id
             sf_service_provider_id = service_request.sr_service_provider_id
@@ -876,7 +916,7 @@ def professional_list(s_id):
     if user.u_role == 1:
         customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         service = Service.query.filter_by(s_id = s_id).first()
-        service_providers = ServiceProvider.query.filter_by(p_service_id = s_id).all()
+        service_providers = ServiceProvider.query.filter_by(p_service_id = s_id, p_approved = True).all()
         service_providers_and_ratings = []
         for service_provider in service_providers:
             feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()

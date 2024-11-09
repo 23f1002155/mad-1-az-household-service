@@ -51,10 +51,10 @@
                     <tr>
                         <td  style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
                         <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ service_request.service.s_name }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_service_name }}</td>
                         <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ service_request.customer.c_address }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_address }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
                         <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                         <td  style="text-align: center; vertical-align:middle">
                             {% if service_request.sr_status == "Assigned" %}
