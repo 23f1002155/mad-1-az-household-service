@@ -1,0 +1,164 @@
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
+{% block name %}
+   Search Result 
+{% endblock %}
+{% block content %}
+{% include 'flashmessage.html'   %}
+    <div class="container", style="height: fit-content;">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center">Search Results</h1>
+                <hr>
+                <div style="height: 500px;">
+                    {% if service_search_result %}
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-success">
+                                <tr>
+                                    <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                                    <th style="text-align: center; vertical-align:middle">Service Name</th>
+                                    <th style="text-align: center; vertical-align:middle">Service Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in service_search_result %}
+                                    <tr>
+                                        <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service.s_name }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service.category.sc_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                        </table>
+                    
+                    {% endif %}
+                    {% if service_provider_search_result %}
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-success">
+                                <tr>
+                                    <th style="text-align: center; vertical-align:middle; width:1%">Sequence Number</th>
+                                    <th style="text-align: center; vertical-align:middle">Professional Name</th>
+                                    <th style="text-align: center; vertical-align:middle">Email</th>
+                                    <th style="text-align: center; vertical-align:middle">Phone</th>
+                                    <th style="text-align: center; vertical-align:middle">Service</th>
+                                    <th style="text-align: center; vertical-align:middle; width:1%">Verification Document</th>
+                                    <th style="text-align: center; vertical-align:middle">City</th>
+                                    <th style="text-align: center; vertical-align:middle">Overall Rating</th>
+                                    <th style="text-align: center; vertical-align:middle">Approved</th>
+                                    <th style="text-align: center; vertical-align:middle">Blocked</th>
+                                    <th style="text-align: center; vertical-align:middle">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service_provider in service_provider_search_result %}
+                                    <tr>
+                                        <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_name }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_email }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_phone }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.s_name }}</td>
+                                        <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}" style="text-decoration: none;" target="_blank"><i class="bi bi-filetype-pdf"></i> View</a></td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_city }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.average_rating }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_approved }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_blocked }}</td>
+                                        <td  style="text-align: center; vertical-align:middle">
+                                            {% if service_provider.p_approved == False %}
+                                                <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success"><i class="bi bi-checklg"></i> Approve</a>
+                    
+                                            {% endif %}
+                                            {% if service_provider.p_blocked == False %}
+                                                <a href="/service_provider/{{ service_provider.p_id }}/block" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                                                  </svg> Block</a>
+                                            {% else %}
+                                                <a href="/service_provider/{{ service_provider.p_id }}/unblock" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                                                  </svg> Unlock</a>
+                                            {% endif %}
+                                            <a href="/service_provider/{{ service_provider.p_id }}/delete" class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i> Delete</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                    {% if customer_search_result %}
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-success">
+                                <tr>
+                                    <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                                    <th style="text-align: center; vertical-align:middle">Customer Name</th>
+                                    <th style="text-align: center; vertical-align:middle;">Address</th>
+                                    <th style="text-align: center; vertical-align:middle">City</th>
+                                    <th style="text-align: center; vertical-align:middle">Pincode</th>
+                                    <th style="text-align: center; vertical-align:middle">Blocked</th>
+                                    <th style="text-align: center; vertical-align:middle">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in customer_search_result %}
+                                    <tr>
+                                        <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ customer.c_name }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ customer.c_address }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ customer.c_city }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ customer.c_pincode }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ customer.c_blocked }}</td>
+                                        <td  style="text-align: center; vertical-align:middle">
+                                            {% if customer.c_blocked == False %}
+                                                <a href="/customer/{{ customer.c_id }}/block" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                                                  </svg> Block</a>
+                                            {% else %}
+                                                <a href="/customer/{{ customer.c_id }}/unblock" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                                                  </svg> Unblock</a>
+                                            {% endif %}
+                                            <a href="url_for('main.delete_customer', c_id = customer.c_id)" class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i> Delete</a>
+                    
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                    {% if service_request_search_result %}
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-success">
+                          <tr>
+                                <th style="text-align: center; vertical-align:middle; width:1%">Sequence Number</th>
+                                <th style="text-align: center; vertical-align:middle; width:10%">Service Request Id</th>
+                                <th style="text-align: center; vertical-align:middle">Professional Name</th>
+                                <th style="text-align: center; vertical-align:middle">Customer Name</th>
+                                <th style="text-align: center; vertical-align:middle">Service Request Date and Time</th>
+                                <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
+                                <th style="text-align: center; vertical-align:middle">Service Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set count = namespace(value=1) %}
+                            {% for service_request in service_request_search_result %}
+                            <tr>
+                                <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.service_provider.p_name }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_name }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
+                                {% set count.value = count.value + 1 %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>           
+            </div>
+        </div>
+    </div>
+{% endblock %}

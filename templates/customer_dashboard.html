@@ -47,18 +47,18 @@
                 </thead>
                 <tbody>
                       
-                    {% for i in range(temp_table|length) %}
+                    {% for service_request in service_requests %}
                     <tr>
                         <td  style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_id }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].s_name }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_date_time }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].c_address }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].c_city }}, {{ temp_table[i].c_pincode }}</td>
-                        <td  style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_status }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.service.s_name }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.customer.c_address }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
+                        <td  style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                         <td  style="text-align: center; vertical-align:middle">
-                            {% if temp_table[i].sr_status == "Assigned" %}
-                            <a href="{{ url_for('main.service_completed', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-success">Completed</a>
+                            {% if service_request.sr_status == "Assigned" %}
+                            <a href="{{ url_for('main.service_completed', sr_id=service_request.sr_id) }}" class="btn btn-outline-success">Completed</a>
                             {% endif %}
                     </tr>
                     {% endfor %}

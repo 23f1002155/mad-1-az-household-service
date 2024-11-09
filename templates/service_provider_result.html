@@ -1,0 +1,54 @@
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
+{% block name %}
+    Search Results
+{% endblock %}
+
+{% block content %}
+{% include 'flashmessage.html'   %}
+    <div class="container" style="height:fit-content;">
+        <div class="col-md-12">
+        <div style="height: 550px;">
+            <h1 class="text-center">Search Results</h1>
+            <hr>
+            <div class="group-item">
+            <table class="table table-bordered table-hover">
+                <thead class="table-success">
+                  <tr class="table-success">
+                    <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                    <th style="text-align: center; vertical-align:middle">Service Request Id</th>
+                    <th style="text-align: center; vertical-align:middle">Customer Name</th>
+                    <th style="text-align: center; vertical-align:middle">Service Request Date and Time</th>
+                    <th style="text-align:center; vertical-align:middle">Service City</th>
+                    <th style="text-align: center; vertical-align:middle">Service Pincode</th>
+                    <th style="text-align: center; vertical-align:middle">Service Status</th>
+                    <th style="text-align: center; vertical-align:middle">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for service_request in search_result %}
+                    <tr>
+                        <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
+                        <td style="text-align: center; vertical-align:middle"><b>{{ service_request.sr_id }}</b></td>
+                        <td style="text-align: center; vertical-align:middle"><b>{{ service_request.customer.c_name }}</b></td>
+                        <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+                        <td style="text-align: center; vertical-align:middle"> {{ service_request.customer.c_city }}</td>
+                        <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_pincode }}</td>
+                        <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
+                        <td  style="text-align: center; vertical-align:middle">
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

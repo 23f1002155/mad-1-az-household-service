@@ -29,29 +29,29 @@
         </thead>
         <tbody>
             {% set count = namespace(value=1) %}
-            {% for i in range(temp_table|length) %}
+            {% for service_request in service_requests %}
             <tr>
-                {% if temp_table[i].sr_status != "Closed" and temp_table[i].sr_status != "Rejected" %}
+                {% if service_request.sr_status != "Closed" and service_request.sr_status != "Rejected" %}
                 <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
-                <td style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_id }}</td>
-                <td style="text-align: center; vertical-align:middle">{{ temp_table[i].c_name }}</td>
-                <td style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_date_time }}</td>
-                <td style="text-align: center; vertical-align:middle">{{ temp_table[i].c_city }}, {{ temp_table[i].c_pincode }}</td>
-                <td style="text-align: center; vertical-align:middle">{{ temp_table[i].sr_status }}</td>
+                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+                <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_name }}</td>
+                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+                <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
+                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                 <td style="text-align: center; vertical-align:middle">
-                    {% if temp_table[i].p_blocked == True %}
-                        {% if temp_table[i].sr_status == "Requested" %}
-                            <a href="{{ url_for('main.accept_request', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-success">Accept</a>
-                            <a href="{{ url_for('main.reject_request', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-danger">Reject</a>
-                        {% elif temp_table[i].sr_status == "Assigned" %}
-                            <a href="{{ url_for('main.reject_request', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-danger">Reject</a>
+                    {% if service_request.p_blocked == True %}
+                        {% if service_request.sr_status == "Requested" %}
+                            <a href="{{ url_for('main.accept_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-success"><i class="bi bi-check-lg"></i> Accept</a>
+                            <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
+                        {% elif service_request.sr_status == "Assigned" %}
+                            <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
                         {% endif %}
                     {% else %}
-                        {% if temp_table[i].sr_status == "Requested" %}
-                            <a href="{{ url_for('main.accept_request', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-success">Accept</a>
-                            <a href="{{ url_for('main.reject_request', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-danger">Reject</a>
-                        {% elif temp_table[i].sr_status == "Assigned" %}
-                            <a href="{{ url_for('main.reject_request', sr_id=temp_table[i].sr_id) }}" class="btn btn-outline-danger">Reject</a>
+                        {% if service_request.sr_status == "Requested" %}
+                            <a href="{{ url_for('main.accept_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-success"><i class="bi bi-check-lg"></i> Accept</a>
+                            <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
+                        {% elif service_request.sr_status == "Assigned" %}
+                            <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-Ig"></i> Reject</a>
                         {% endif %}
                     {% endif %}
                     
@@ -77,14 +77,14 @@
         </thead>
         <tbody>
             {% set count = namespace(value=1) %}
-            {% for j in range(temp_table|length) %}
+            {% for service_request in service_requests %}
             <tr>
-            {% if temp_table[j].sr_status == "Closed" %}
+            {% if service_request.sr_status == "Closed" %}
             <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_id }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_name }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_date_time }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_city }}, {{ temp_table[j].c_pincode }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_name }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
             <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[j].sf_feedback }}</td>
             <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[j].sf_rating }}</td>
             {% set count.value = count.value + 1 %}
@@ -107,14 +107,14 @@
         </thead>
         <tbody>
             {% set count = namespace(value=1) %}
-            {% for j in range(temp_table|length) %}
+            {% for service_request in service_requests %}
             <tr>
-            {% if temp_table[j].sr_status == "Rejected" %}
+            {% if service_request.sr_status == "Rejected" %}
             <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_id }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_name }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].sr_date_time }}</td>
-            <td style="text-align: center; vertical-align:middle">{{ temp_table[j].c_city }}, {{ temp_table[j].c_pincode }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_name }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
             {% set count.value = count.value + 1 %}
             {% endif %}
             

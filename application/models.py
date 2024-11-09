@@ -83,6 +83,17 @@ class ServiceRequest(db.Model):
     service_provider = db.relationship("ServiceProvider", backref = "service_request_database", lazy = True)
     service = db.relationship("Service", backref = "service_request_database", lazy = True)
 
+class Cart(db.Model):
+    __tablename__ = "cart_database"
+    cart_id = db.Column(db.Integer, primary_key = True)
+    cart_customer_id = db.Column(db.Integer, db.ForeignKey('customer_database.c_id'))
+    cart_service_id = db.Column(db.Integer, db.ForeignKey('service_database.s_id'))
+    cart_service_provider_id = db.Column(db.Integer, db.ForeignKey('service_provider_database.p_id'))
+
+    customer = db.relationship("Customer", backref = "cart_database", lazy = True)
+    service = db.relationship("Service", backref = "cart_database", lazy = True)
+    service_provider = db.relationship("ServiceProvider", backref = "cart_database", lazy = True)
+
 class ServiceFeedback(db.Model):
     __tablename__ = "service_feedback_database"
     sf_id = db.Column(db.Integer, primary_key = True)

@@ -1,11 +1,15 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask
+from flask_restful import Resource, Api
 from application.config import LocalDevelopmentConfig
 from application.database import db
 from application.models import *
 from application.controllers import *
 
+
+app = None
+api = None
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
@@ -15,11 +19,12 @@ def create_app():
         print("Starting Local Development...")
         app.config.from_object(LocalDevelopmentConfig)
     db.init_app(app)
+    api = Api(app)
     app.app_context().push()
-    return app
+    return app, api
 
 load_dotenv()
-app = create_app()
+app, api = create_app()
 app.register_blueprint(my_blueprint)
 
 with app.app_context():
@@ -31,6 +36,10 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
         print("Admin Created")
+
+from application.api import ServiceCategoryAPI
+
+api.add_resource(ServiceCategoryAPI, '/service_categories', '/service_categories/<int:sc_id>')
 
 
 if __name__ == '__main__':

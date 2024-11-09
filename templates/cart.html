@@ -1,0 +1,56 @@
+{% extends 'customer_layout.html' %}
+{% block name %}
+    Cart
+{% endblock %}
+{% block content %}
+{% include 'flashmessage.html' %}
+<div style="height:fit-content;">
+    <div class="container" style="height: 550px;">
+        {% if carts %}
+        <h1>Cart</h1>
+        <table class="table table-bordered table-hover">
+            <thead class="table-success">
+              <tr>
+                    <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                    <th style="text-align: center; vertical-align:middle">Service Name</th>
+                    <th style="text-align: center; vertical-align:middle">Service Professional Name</th>
+                    <th style="text-align: center; vertical-align:middle">Service Rate</th>
+                    <th style="text-align: center; vertical-align:middle">Service Time Required</th>
+                    <th style="text-align: center; vertical-align:middle">Total Price</th>
+                    <th style="text-align: center; vertical-align:middle">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% set count = namespace(value=1) %}
+                {% set grand_total = namespace(value=0) %}
+                {% for cart in carts %}
+                <tr>
+                    <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ cart.service.s_name }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ cart.service_provider.p_name }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ cart.service.s_rate }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ cart.service.s_time_required }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ cart.service.s_rate * cart.service.s_time_required }}</td>
+                    <td style="text-align: center; vertical-align:middle">
+                        <a href="{{ url_for('main.remove_from_cart', cart_id= cart.cart_id) }}" class="btn btn-outline-danger">Remove</a>
+                    </td>
+                    {% set count.value = count.value + 1 %}
+                    {% set grand_total.value = grand_total.value + (cart.service.s_rate * cart.service.s_time_required) %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="group-item" style="display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin-right: 20px;">
+
+            <h3><b>Grand Total:</b> &#8377 {{ grand_total.value }}</h3>
+            <a href="#" class="btn btn-outline-success">Place Order</a>
+        </div>
+        {% else %}
+        <h1 style="margin-left: 450px;margin-top:250px; margin-bottom:100px">No Item in Cart</h1>
+        {% endif %}
+
+
+    </div>
+</div>
+{% endblock %}
+    

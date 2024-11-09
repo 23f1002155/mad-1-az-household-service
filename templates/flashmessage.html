@@ -5,11 +5,11 @@
             {% for message in messages %}
                 {% if "Success" in message %}
                   <div class="alert alert-success" role="alert">
-                    {{ message }}
+                    <i class="bi bi-emoji-smile-fill"></i> {{ message }}
                   </div>
                 {% else %}
                   <div class="alert alert-danger" role="alert">
-                    {{ message }}
+                    <i class="bi bi-emoji-frown-fill"></i> {{ message }}
                   </div>
                 {% endif %}
                 {% endfor %}

@@ -27,12 +27,20 @@
       {% endwith %}
         <form class="row g-3" method="post">
           <div class="col-md-6">
-            <label for="inputName" class="form-label">UserName</label>
+            <label for="inputName" class="form-label">Username</label>
             <input type="text" class="form-control" name = "inputName" required>
           </div>
           <div class="col-md-6">
             <label for="inputEmail4" class="form-label">Email</label>
             <input type="email" class="form-control" name="inputEmail4" required>
+          </div>
+          <div class="col-md-6">
+            <label for="inputFirstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" name="inputFirstName" required>
+          </div>
+          <div class="col-md-6">
+            <label for="inputLastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" name="inputLastName" required>
           </div>
           <div class="col-md-6">
             <label for="inputPassword4" class="form-label">Password</label>
@@ -44,15 +52,15 @@
           </div>
           <div class="col-12">
             <label for="inputAddress" class="form-label">Address</label>
-            <textarea class="form-control" name="inputAddress" placeholder="1234 Main St" required></textarea>
+            <input type="text" class="form-control" name="inputAddress" placeholder="1234 Main St" required>
           </div>
           <div class="col-md-6">
             <label for="inputCity" class="form-label">City</label>
             <input type="text" class="form-control" name="inputCity" required>
           </div>
           <div class="col-md-6">
-            <label for="inputZip" class="form-label">Zip</label>
-            <input type="text" class="form-control" name="inputZip" required>
+            <label for="inputZip" class="form-label">Pincode</label>
+            <input type="number" class="form-control" name="inputZip" required>
           </div>
           <div class="col-12">
             <button type="submit" class="btn btn-outline-success">Sign in</button>

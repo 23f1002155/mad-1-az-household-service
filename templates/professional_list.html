@@ -39,7 +39,7 @@
                     <td style="text-align: center; vertical-align:middle">{{ service_provider[1] }}</td>
                     <td  style="text-align: center; vertical-align:middle">
                         {% if customer.c_blocked == False %}
-                        <a href="{{ url_for('main.service_request', s_id=service.s_id) }}" class="btn btn-outline-success">Request Service</a>
+                        <a href="{{ url_for('main.add_to_cart', p_id= service_provider[0].p_id) }}" class="btn btn-outline-success">Add to Cart</a>
                         {% else %}
                         <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-secondary" >Request Service</a>
                         {% endif %}

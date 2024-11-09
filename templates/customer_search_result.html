@@ -12,30 +12,9 @@
 {% block content %}
 {% include 'flashmessage.html'   %}
     <div class="container" style="height:fit-content;">
-        <form action="" method="post" class="inline" style="margin-bottom: 30px;">
-            <div class="form-group row" style="margin-left: 220px;">
-                <div class="col-md-3">
-                    <label for="search_by"></label>
-                    <select class="form-control" id="search_by" name="search_by" style="border-radius: 18px; margin-left:27px">
-                        <option value="search_by" selected>Search By...</option>
-                        <option value="p_name">Professional Name</option>
-                        <option value="p_pincode">Pincode</option>
-                        <option value="p_city">City</option>
-                        <option value="s_name">Service Name</option>
-                        <option value="p_experience">Professional Experience</option>
-                        <option value="rating">Professional Rating</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="search"></label>
-                    <input type="text" class="form-control" id="search" name="search" placeholder="Search..."  style="border-radius: 18px;">
-                </div>
-                <div class="col-md-1" style="margin-top: 25px;">
-                    <button type="submit" class="btn btn-success" style="border-radius: 18px; margin-left:-103px">Search</button> 
-                </div>
-            </div>
-            </form>
         <div class="col-md-12">
+            <h1 class="text-center">Search Results</h1>
+            <hr>
             <div class="group-item">
             <table class="table table-bordered table-hover">
                 <thead class="table-success">
@@ -54,15 +33,15 @@
                 {% for service_provider in search_result %}
                     <tr>
                         <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
-                        <td style="text-align: center; vertical-align:middle"><b>{{ service_provider[0].s_name }}</b></td>
+                        <td style="text-align: center; vertical-align:middle"><b>{{ service_provider[0].service.s_name }}</b></td>
                         <td style="text-align: center; vertical-align:middle"><b>{{ service_provider[0].p_name }}</b></td>
                         <td style="text-align: center; vertical-align:middle">{{ service_provider[0].p_experience }}</td>
                         <td style="text-align: center; vertical-align:middle"> {{ service_provider[0].p_city }}</td>
                         <td style="text-align: center; vertical-align:middle">{{ service_provider[0].p_pincode }}</td>
                         <td style="text-align: center; vertical-align:middle">{{ service_provider[1] }}</td>
                         <td  style="text-align: center; vertical-align:middle">
-                            <a href="{{ url_for('main.professional_list', s_id= service_provider[0].s_id) }}" class="btn btn-outline-success">Check Available Professionals</a>
-                            <a href="{{ url_for('main.service_request', s_id= service_provider[0].s_id) }}" class="btn btn-outline-success">Request Service</a>
+                            <a href="{{ url_for('main.professional_list', s_id= service_provider[0].service.s_id) }}" class="btn btn-outline-success">Check Available Professionals</a>
+                            <a href="{{ url_for('main.add_to_cart', p_id= service_provider[0].p_id) }}" class="btn btn-outline-success">Add to Cart</a>
                         </td>
                     </tr>
                 {% endfor %}

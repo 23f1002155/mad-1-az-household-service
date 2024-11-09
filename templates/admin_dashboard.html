@@ -5,10 +5,10 @@
 {% else %}
     {% extends 'service_provider_layout.html' %}
 {% endif %}
-
 {% block name %}
     Admin Dashboard
 {% endblock %}
+
 
 {% block content %}
 {% include 'flashmessage.html'   %}
@@ -18,7 +18,8 @@
         <div class="group-item">
             <div style="display: flex; justify-content:space-between; align-items:center;">
                 <h4>Service Categories</h4>
-                <a href="/service_category/add" class="btn btn-outline-success">Add Service Category</a>
+                <a href="/service_category/add" class="btn btn-outline-success"><i class="bi bi-plus-circle"></i> Add Service Category</a>
+            
             </div>
             <table class="table table-bordered table-hover">
                 <thead class="table-success">
@@ -34,8 +35,8 @@
                         <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
                         <td style="text-align: center; vertical-align:middle"><b>{{ category.sc_name }}</b></td>
                         <td  style="text-align: center; vertical-align:middle">
-                            <a href="/service_category/{{ category.sc_id }}/edit" class="btn btn-outline-success">Edit</a>
-                            <a href="/service_category/{{ category.sc_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                            <a href="/service_category/{{ category.sc_id }}/edit" class="btn btn-outline-success"><i class="bi bi-pencil-square"></i> Edit</a>
+                            <a href="/service_category/{{ category.sc_id }}/delete" class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i> Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -45,7 +46,7 @@
         <div class="group-item">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h4>Services</h4>
-            <a href="/service/add" class="btn btn-outline-success">Add Service</a>
+            <a href="/service/add" class="btn btn-outline-success"><i class="bi bi-plus-circle"></i> Add Service</a>
         </div>
         <table class="table table-bordered table-hover">
             <thead class="table-success">
@@ -67,8 +68,8 @@
                     <td style="text-align: center; vertical-align:middle">&#8377 {{ service.s_rate }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service.s_time_required }}</td>
                     <td  style="text-align: center; vertical-align:middle">
-                        <a href="/service/{{ service.s_id }}/edit" class="btn btn-outline-success">Edit</a>
-                        <a href="/service/{{ service.s_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                        <a href="/service/{{ service.s_id }}/edit" class="btn btn-outline-success"><i class="bi bi-pencil-square"></i> Edit</a>
+                        <a href="/service/{{ service.s_id }}/delete" class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i>  Delete</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -101,21 +102,25 @@
                     <td style="text-align: center; vertical-align:middle"><a href="mailto:{{ service_provider.p_email }}" style="text-decoration: none; color:black">{{ service_provider.p_email }}</a></td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.p_contact_number }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.service.s_name }}</td>
-                    <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}"  style="text-decoration: none;" target="_blank">View</a></td>
+                    <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}"  style="text-decoration: none;" target="_blank"><i class="bi bi-filetype-pdf"></i> View</a></td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.p_city }}</td>
                     <td  style="text-align: center; vertical-align:middle">{{ service_provider.p_approved }}</td>
                     <td  style="text-align: center; vertical-align:middle">{{ service_provider.p_blocked }}</td> 
                     <td  style="text-align: center; vertical-align:middle">
                         {% if service_provider.p_approved == False %}
-                            <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success">Approve</a>
+                            <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success"><i class="bi bi-checklg"></i> Approve</a>
                             
                         {% endif %}
                         {% if service_provider.p_blocked == False %}
-                            <a href="/service_provider/{{ service_provider.p_id }}/block" class="btn btn-outline-secondary">Block</a>
+                            <a href="/service_provider/{{ service_provider.p_id }}/block" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                              </svg> Block</a>
                         {% else %}
-                            <a href="/service_provider/{{ service_provider.p_id }}/unblock" class="btn btn-outline-secondary">Unlock</a> 
+                            <a href="/service_provider/{{ service_provider.p_id }}/unblock" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                              </svg> Unlock</a> 
                         {% endif %}
-                        <a href="/service_provider/{{ service_provider.p_id }}/delete" class="btn btn-outline-danger">Delete</a>
+                        <a href="/service_provider/{{ service_provider.p_id }}/delete" class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i> Delete</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -149,11 +154,15 @@
                         <td  style="text-align: center; vertical-align:middle">{{ customer.c_blocked }}</td> 
                         <td  style="text-align: center; vertical-align:middle">
                             {% if customer.c_blocked == False %}
-                                <a href="/customer/{{ customer.c_id }}/block" class="btn btn-outline-secondary">Block</a>
+                                <a href="/customer/{{ customer.c_id }}/block" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                                  </svg> Block</a>
                             {% else %}
-                                <a href="/customer/{{ customer.c_id }}/unblock" class="btn btn-outline-secondary">Unblock</a> 
+                                <a href="/customer/{{ customer.c_id }}/unblock" class="btn btn-outline-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                                  </svg> Unblock</a> 
                             {% endif %}
-                            <a href="url_for('main.delete_customer', c_id = customer.c_id)" class="btn btn-outline-danger">Delete</a>
+                            <a href="url_for('main.delete_customer', c_id = customer.c_id)" class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i> Delete</a>
                             
                         </td>
                     </tr>
@@ -161,7 +170,38 @@
                 </tbody>
                 </table>
             </div>
-    </div>
+            <div class="group-item">
+                <h4>Service Request Details</h4>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-success">
+                      <tr>
+                            <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                            <th style="text-align: center; vertical-align:middle">Service Request Id</th>
+                            <th style="text-align: center; vertical-align:middle">Professional Name</th>
+                            <th style="text-align: center; vertical-align:middle">Customer Name</th>
+                            <th style="text-align: center; vertical-align:middle">Service Request Date and Time</th>
+                            <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
+                            <th style="text-align: center; vertical-align:middle">Service Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set count = namespace(value=1) %}
+                        {% for service_request in service_requests %}
+                        <tr>
+                            <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.service_provider.p_name }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_name }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
+                            {% set count.value = count.value + 1 %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+    </div>  
 
 </div>
 

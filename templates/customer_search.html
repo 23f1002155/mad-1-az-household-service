@@ -12,12 +12,12 @@
 {% block content %}
 {% include 'flashmessage.html'   %}
     <div class="container" style="height: 500px;">
-        <form action="" method="post" class="inline">
+        <form action="" method="get" class="inline">
             <div class="form-group row" style="margin-left: 220px;">
                 <div class="col-md-3">
-                    <label for="search_by"></label>
-                    <select class="form-control" id="search_by" name="search_by" style="border-radius: 18px; margin-left:27px">
-                        <option value="search_by" selected>Search By...</option>
+                    <label for="parameter"></label>
+                    <select class="form-control" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
+                        <option value="parameter" selected>Search By...</option>
                         <option value="p_name">Professional Name</option>
                         <option value="p_pincode">Pincode</option>
                         <option value="p_city">City</option>
@@ -27,8 +27,8 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="search"></label>
-                    <input type="text" class="form-control" id="search" name="search" placeholder="Search..."  style="border-radius: 18px;">
+                    <label for="query"></label>
+                    <input type="text" class="form-control" id="query" name="query" placeholder="Search..."  style="border-radius: 18px;">
                 </div>
                 <div class="col-md-1" style="margin-top: 25px;">
                     <button type="submit" class="btn btn-success" style="border-radius: 18px; margin-left:-103px">Search</button> 
