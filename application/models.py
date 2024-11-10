@@ -81,6 +81,7 @@ class ServiceRequest(db.Model):
     sr_transaction_id = db.Column(db.Integer, db.ForeignKey('transaction_database.t_id'))
     sr_service_id = db.Column(db.Integer, nullable = False)
     sr_service_name = db.Column(db.String, nullable = False)
+    sr_total = db.Column(db.REAL, nullable = False)
     sr_service_provider_id = db.Column(db.Integer, nullable = False)
     sr_service_provider_name = db.Column(db.String, nullable = False)
     sr_service_provider_fullname = db.Column(db.String, nullable = False)
@@ -96,7 +97,7 @@ class ServiceRequest(db.Model):
     sr_date_time = db.Column(db.DateTime, nullable = False)
     sr_status = db.Column(db.String, nullable = False)
 
-    transaction = db.relationship("Transaction", backref = "service_request_database", lazy = True)
+    transaction = db.relationship('Transaction', back_populates='service_requests', overlaps="service_request_database,transaction", lazy = True)
 
 class Cart(db.Model):
     __tablename__ = "cart_database"
@@ -114,6 +115,9 @@ class Transaction(db.Model):
     t_id = db.Column(db.Integer, primary_key = True)
     t_customer_id = db.Column(db.Integer, nullable = False)
     t_date_time = db.Column(db.DateTime, nullable = False)
+    t_total_amount = db.Column(db.REAL, nullable = False)
+
+    service_requests = db.relationship('ServiceRequest', back_populates='transaction', overlaps="service_request_database,transaction", lazy = True)
 
 class ServiceFeedback(db.Model):
     __tablename__ = "service_feedback_database"

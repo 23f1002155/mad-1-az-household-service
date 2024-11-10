@@ -15,7 +15,8 @@
 
   {% include 'flashmessage.html'   %}
     <div class="container" style="height:fit-content">
-        <h1>{{ service_category.sc_name }}</h1>
+        <h1 style="margin-bottom: 40px;">{{ service_category.sc_name }}</h1>
+        <hr>
         <div class="row">
         {% for service in services %}
         <div class="col-sm-3">

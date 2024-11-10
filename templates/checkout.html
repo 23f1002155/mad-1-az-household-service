@@ -11,44 +11,42 @@
 
 {% block content %}
 {% include 'flashmessage.html'   %}
-    <div class="container" style="height:fit-content;">
-        <div class="col-md-12">
+    <div class="container" style="height:fit-content; padding-top: 20px;">
         <div style="height: 550px;">
             <h1 class="text-center">Checkout</h1>
             <hr>
-            <div class="group-item">
-                <div class="d-flex justify-content-between" style="height: 70px;"> 
-                <div class="group-item d-flex justify-content">
-                    <h5>Customer Name:</h5> <b style="margin-left: 10px;">{{ customer.c_fname + " " + customer.c_lname }}</b>
+            <div class="row d-flex align-items-center">
+                <div class="col-md-6 d-flex flex-column justify-content-center">
+                    <h5>Customer Name:</h5>
+                    <b>{{ customer.c_fname }} {{ customer.c_lname }}</b>
                 </div>
-                <br>
-                <div class="group-item d-flex justify-content">
-                    <h5>Customer Email:</h5> <b style="margin-left: 10px;"> {{ customer.c_email }}</b>
+                <div class="col-md-6 d-flex flex-column  flex-wrap justify-content-center">
+                    <h5>Customer Email:</h5>
+                    <b>{{ customer.c_email }}</b>
                 </div>
-                <br>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6 d-flex flex-column justify-content-center">
+                    <h5>Service Address:</h5>
+                    <b>{{ customer.c_address }}, {{ customer.c_city }}, {{ customer.c_pincode }}</b>
                 </div>
-                <div class="group-item d-flex justify-content-between" style="height: 70px;">
-                    <div class="group-item d-flex justify-content">
-                        <h5>Service Address:</h5> <b style="margin-left: 10px;">{{ customer.c_address + ',' + customer.c_city + ',' + customer.c_pincode|string }}</b>
-                    </div>
-                    <br>
-                    <div class="group-item d-flex justify-content">
-                        <h5 style="margin-left: 265px;">Service Request Date and Time:</h5> <b style="margin-left: 10px;">{{ current_date_time }}</b>
-                    </div>
-                    <br>
+                <div class="col-md-6 d-flex flex-column justify-content-center">
+                    <h5>Service Request Date and Time:</h5>
+                    <b>{{ current_date_time }}</b>
                 </div>
-                <table class="table table-bordered table-hover">
-                    <thead class="table-success">
-                      <tr class="table-success">
+            </div>
+            <table class="table table-bordered table-hover mt-4">
+                <thead class="table-success">
+                    <tr>
                         <th style="text-align: center; vertical-align:middle;width: 1%">Sequence Number</th>
                         <th style="text-align: center; vertical-align:middle;">Service Name</th>
                         <th style="text-align: center; vertical-align:middle;">Professional Name</th>
                         <th style="text-align: center; vertical-align:middle;">Rate</th>
-                        <th style="text-align:center; vertical-align:middle;">Time Requried</th>
+                        <th style="text-align:center; vertical-align:middle;">Time Required</th>
                         <th style="text-align: center; vertical-align:middle;">Total Cost</th>
-                       </tr>
-                    </thead>
-                    <tbody>
+                    </tr>
+                </thead>
+                <tbody>
                     {% set count = namespace(value=1) %}
                     {% for cart in carts %}
                         <tr>
@@ -56,32 +54,29 @@
                             <td style="text-align: center; vertical-align:middle"><b>{{ cart.service.s_name }}</b></td>
                             <td style="text-align: center; vertical-align:middle"><b>{{ cart.service_provider.p_name }}</b></td>
                             <td style="text-align: center; vertical-align:middle">&#8377 {{ cart.service.s_rate }}</td>
-                            <td style="text-align: center; vertical-align:middle"> {{ cart.service.s_time_required }}</td>
-                            <td style="text-align: center; vertical-align:middle">&#8377 {{ cart.service.s_rate * cart.service.s_time_required  }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ cart.service.s_time_required }}</td>
+                            <td style="text-align: center; vertical-align:middle">&#8377 {{ cart.service.s_rate * cart.service.s_time_required }}</td>
                             {% set count.value = count.value + 1 %}
-                    {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="5" style="text-align: center; vertical-align:middle"><b>Grand Total</b></td>
-                            <td style="text-align: center; vertical-align:middle"><strong>&#8377 {{ total }}</strong></td>
                         </tr>
-                    </tfoot>
-                </table>
-                <form action="{{ url_for('main.service_request') }}" method="POST">
-                    <input type="hidden" name="sr_date_time" value="{{ current_date_time }}">
-                    <div class="col-md-3" style="margin-left: 1150px">
-                        {% if customer.c_blocked %}
-                            <button type="submit" class="btn btn-outline-secondary">Request Service</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-outline-success">Request Service</button>
-                        {% endif %}
-                    </div>
-                </form>
-            </div>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" style="text-align: center; vertical-align:middle"><b>Grand Total</b></td>
+                        <td style="text-align: center; vertical-align:middle"><strong>&#8377 {{ total }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <form action="{{ url_for('main.service_request') }}" method="POST" class="text-right mt-3">
+                <input type="hidden" name="sr_date_time" value="{{ current_date_time }}">
+                {% if customer.c_blocked %}
+                    <button type="submit" class="btn btn-outline-secondary" style="margin-left: 1150px;">Request Service</button>
+                {% else %}
+                    <button type="submit" class="btn btn-outline-success" style="margin-left: 1149px;">Request Service</button>
+                {% endif %}
+            </form>
         </div>
     </div>
-</div>
 {% endblock %}
 
                      

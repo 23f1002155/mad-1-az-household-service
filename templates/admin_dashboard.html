@@ -33,7 +33,7 @@
                     {% for category in categories %}
                     <tr>
                         <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
-                        <td style="text-align: center; vertical-align:middle"><b>{{ category.sc_name }}</b></td>
+                        <td style="text-align: center; vertical-align:middle"><b><a href="{{ url_for('main.service', s_category_id = category.sc_id) }}" style="text-decoration: none;color:black">{{ category.sc_name }}</b></td>
                         <td  style="text-align: center; vertical-align:middle">
                             <a href="/service_category/{{ category.sc_id }}/edit" class="btn btn-outline-success"><i class="bi bi-pencil-square"></i> Edit</a>
                             <a href="/service_category/{{ category.sc_id }}/delete" class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i> Delete</a>
@@ -83,30 +83,27 @@
             <thead class="table-success">
               <tr class="table-success">
                 <th style="text-align: center; vertical-align:middle; width:1%">Sequence Number</th>
-                <th style="text-align: center; vertical-align:middle">Name</th>
-                <th style="text-align: center; vertical-align:middle">Email</th>
-                <th style="text-align: center; vertical-align:middle">Phone</th>
-                <th style="text-align: center; vertical-align:middle">Service</th>
+                <th style="text-align: center; vertical-align:middle; width:3%">Name</th>
+                <th style="text-align: center; vertical-align:middle; width:15%">Service</th>
                 <th style="text-align: center; vertical-align:middle; width:1%">Verification Document</th>
-                <th style="text-align: center; vertical-align:middle">City</th>
-                <th style="text-align: center; vertical-align:middle">Approved</th>
-                <th style="text-align: center; vertical-align:middle">Blocked</th>
-                <th style="text-align: center; vertical-align:middle">Action</th>
+                <th style="text-align: center; vertical-align:middle; width:1%">City</th>
+                <th style="text-align: center; vertical-align:middle; width:1%">Approved</th>
+                <th style="text-align: center; vertical-align:middle; width:1%">Blocked</th>
+                <th style="text-align: center; vertical-align:middle; width:20%">Action</th>
               </tr>
             </thead>
             <tbody>
             {% for service_provider in services_providers %}
                 <tr>
                     <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
-                    <td style="text-align: center; vertical-align:middle"><b><a href="/service_provider/{{ service_provider.p_id }}" style="text-decoration:none">{{ service_provider.p_name }}</a></b></td>
-                    <td style="text-align: center; vertical-align:middle"><a href="mailto:{{ service_provider.p_email }}" style="text-decoration: none; color:black">{{ service_provider.p_email }}</a></td>
-                    <td style="text-align: center; vertical-align:middle">{{ service_provider.p_contact_number }}</td>
+                    <td style="text-align: center; vertical-align:middle"><b><a href="{{ url_for('main.view_service_provider', p_id = service_provider.p_id) }}" style="text-decoration:none; color:black">{{ service_provider.p_name }}</a></b></td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.service.s_name }}</td>
                     <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}"  style="text-decoration: none;" target="_blank"><i class="bi bi-filetype-pdf"></i> View</a></td>
                     <td style="text-align: center; vertical-align:middle">{{ service_provider.p_city }}</td>
                     <td  style="text-align: center; vertical-align:middle">{{ service_provider.p_approved }}</td>
                     <td  style="text-align: center; vertical-align:middle">{{ service_provider.p_blocked }}</td> 
                     <td  style="text-align: center; vertical-align:middle">
+                        <a href="{{ url_for('main.view_service_provider', p_id = service_provider.p_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
                         {% if service_provider.p_approved == False %}
                             <a href="/service_provider/{{ service_provider.p_id }}/approve" class="btn btn-outline-success"><i class="bi bi-checklg"></i> Approve</a>
                             
@@ -183,6 +180,7 @@
                             <th style="text-align: center; vertical-align:middle">Service Request Date and Time</th>
                             <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
                             <th style="text-align: center; vertical-align:middle">Service Status</th>
+                            <th style="text-align: center; vertical-align:middle; width:10%">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -197,6 +195,9 @@
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
+                            <td style="text-align: center; vertical-align:middle">
+                                <a href="{{ url_for('main.service_request_details', sr_id = service_request.sr_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
+                            </td>
                             {% set count.value = count.value + 1 %}
                         </tr>
                         {% endfor %}

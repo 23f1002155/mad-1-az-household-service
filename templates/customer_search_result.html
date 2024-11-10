@@ -20,11 +20,11 @@
                 <thead class="table-success">
                   <tr class="table-success">
                     <th style="text-align: center; vertical-align:middle">Sequence Number</th>
-                    <th style="text-align: center; vertical-align:middle">Service Name</th>
+                    <th style="text-align: center; vertical-align:middle; width:10%">Service Name</th>
                     <th style="text-align: center; vertical-align:middle">Professional Name</th>
-                    <th style="text-align: center; vertical-align:middle">Professional Experience</th>
-                    <th style="text-align:center; vertical-align:middle">Professional City</th>
-                    <th style="text-align: center; vertical-align:middle">Professional Pincode</th>
+                    <th style="text-align: center; vertical-align:middle; width:5%">Professional Experience</th>
+                    <th style="text-align:center; vertical-align:middle; width:3%">Professional City</th>
+                    <th style="text-align: center; vertical-align:middle; width: 3%">Professional Pincode</th>
                     <th style="text-align: center; vertical-align:middle">Overall Rating</th>
                     <th style="text-align: center; vertical-align:middle">Action</th>
                   </tr>
@@ -40,8 +40,25 @@
                         <td style="text-align: center; vertical-align:middle">{{ service_provider[0].p_pincode }}</td>
                         <td style="text-align: center; vertical-align:middle">{{ service_provider[1] }}</td>
                         <td  style="text-align: center; vertical-align:middle">
-                            <a href="{{ url_for('main.professional_list', s_id= service_provider[0].service.s_id) }}" class="btn btn-outline-success">Check Available Professionals</a>
-                            <a href="{{ url_for('main.add_to_cart', p_id= service_provider[0].p_id) }}" class="btn btn-outline-success">Add to Cart</a>
+                            {% set in_cart = service_provider[0].p_id in cart_professional_ids %}
+                            {% set cart_index = cart_professional_ids.index(service_provider[0].p_id) if in_cart else None %}
+                            {% set cart_id = carts[cart_index].cart_id if in_cart else None %}
+                            {% set blocked = customer.c_blocked %}
+                            <a href="{{ url_for('main.view_service_provider', p_id = service_provider[0].p_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
+                            {% if in_cart and cart_id is not none %}
+                                {% if not blocked %}
+                                    <a href="{{ url_for('main.remove_from_cart', cart_id=cart_id) }}" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Remove from Cart</a>
+                                {% else %}
+                                    <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Remove From Cart</a>
+                                {% endif %}
+                            {% else %}
+                                {% if not blocked %}
+                                    <a href="{{ url_for('main.add_to_cart', p_id=service_provider[0].p_id) }}" class="btn btn-outline-success"><i class="bi bi-cart"></i> Add to Cart</a>
+                                {% else %}
+                                    <a href="{{ url_for('main.blocked') }}" class="btn btn-outline-secondary"><i class="bi bi-cart-fill"></i> Add to Cart</a>
+                                {% endif %}
+                            {% endif %}
+                            <a href="{{ url_for('main.professional_list', s_id= service_provider[0].service.s_id) }}" class="btn btn-outline-success"><i class="bi bi-list"></i> Check Other Professionals</a>
                         </td>
                     </tr>
                 {% endfor %}

@@ -22,32 +22,34 @@
       <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
       </span>
       
-      <form action="{{ url_for('main.search_from_header') }}" method="get" class="inline">
+      <form action="{{ url_for('main.search_from_header') }}" method="get" class="inline" style="margin-right:-100px">
         <div class="form-group row" style="margin-left: 220px; margin-top:-20px">
-        <div class="col-md-4" style="margin-top:0px;margin-left:-190px">
-        <label for="parameter"></label>
-        <select class="parameter form-select" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
-        <option value="parameter" selected>Search By...</option>
-        <option value="sc_name">Service Category Name</option>
-        <option value="s_name">Service Name</option>
-        <option value="p_name">Professional Name</option>
-        <option value="c_name">Customer Name</option>
-        <option value="sr_id">Service Request Id</option>
-        <option value="sr_date_time">Sevice Request Date and TIme</option>
-        <option value="rating">Professional Rating</option>
-        </select>
+        <div class="clo-md-12 d-flex justify-content">
+          <div class="col-md-4" style="margin-top:0px;margin-left:-230px; size:10%">
+          <label for="parameter"></label>
+          <select class="parameter form-select" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
+          <option value="parameter" selected>Search By...</option>
+          <option value="sc_name">Service Category Name</option>
+          <option value="s_name">Service Name</option>
+          <option value="p_name">Professional Name</option>
+          <option value="c_name">Customer Name</option>
+          <option value="sr_id">Service Request Id</option>
+          <option value="sr_date_time">Sevice Request Date and TIme</option>
+          <option value="rating">Professional Rating</option>
+          </select>
+          </div>
+          <div class="col-md-4" style="width: 500px; margin-left:40px">
+          <label for="query"></label>
+          <input type="text" class="form-control" id="query" name="query" placeholder="Search..."  style="border-radius: 18px;">
+          </div>
+          <div class="col-md-1" style="margin-top: 26px;">
+          <button type="submit" class="btn btn-success" style="border-radius: 18px; margin-left:-96px; margin-top:-1px">
+              <i class="bi bi-search"></i> Search
+          </button>
+          </div>
+          </div>
+                </form>
         </div>
-        <div class="col-md-6" style="width: 550px;">
-        <label for="query"></label>
-        <input type="text" class="form-control" id="query" name="query" placeholder="Search..."  style="border-radius: 18px;">
-        </div>
-        <div class="col-md-1" style="margin-top: 26px;">
-        <button type="submit" class="btn btn-success" style="border-radius: 18px; margin-left:-96px; margin-top:-1px">
-            <i class="bi bi-search"></i> Search
-        </button>
-        </div>
-        </div>
-      </form>
 
       <div class="navbar-nav ms-auto">
         <b><a class="nav-link" href="{{ url_for('main.home') }}"><i class="bi bi-house-fill"></i> Home</a></b>

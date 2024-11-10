@@ -14,8 +14,9 @@
 
 <div class="container" style="height: fit-content;">
     <h1>Professional Dashboard</h1><hr>        
-    <div style="height: 500px;">
-        <h3>Service Requests</h3>
+    <div style="height: 650px;">
+        <h3 style="margin-top: 50px;">Requested Service Requests</h3>
+        {% if requested_service_requests %}
         <table class="table table-bordered table-hover">
             <thead class="table-success">
               <tr>
@@ -30,9 +31,8 @@
             </thead>
             <tbody>
                 {% set count = namespace(value=1) %}
-                {% for service_request in service_requests %}
+                {% for service_request in requested_service_requests %}
                 <tr>
-                    {% if service_request.sr_status != "Closed" and service_request.sr_status != "Rejected" %}
                     <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_request.sr_customer_name }}</td>
@@ -41,29 +41,67 @@
                     <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                     <td style="text-align: center; vertical-align:middle">
                         {% if service_request.p_blocked == True %}
-                            {% if service_request.sr_status == "Requested" %}
                                 <a href="{{ url_for('main.accept_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-success"><i class="bi bi-check-lg"></i> Accept</a>
                                 <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
-                            {% elif service_request.sr_status == "Assigned" %}
-                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
-                            {% endif %}
                         {% else %}
-                            {% if service_request.sr_status == "Requested" %}
                                 <a href="{{ url_for('main.accept_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-success"><i class="bi bi-check-lg"></i> Accept</a>
                                 <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
-                            {% elif service_request.sr_status == "Assigned" %}
-                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-Ig"></i> Reject</a>
-                            {% endif %}
                         {% endif %}
-        
                     </td>
                     {% set count.value = count.value + 1 %}
-                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <h3>Closed Services</h3>
+        {% else %}
+            <hr>
+            <h4>No Service Requests Currently</h4>
+        {% endif %}
+
+        <h3 style="margin-top: 50px;">Assigned Service Requests</h3>
+        {% if assigned_service_requests %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-success">
+              <tr>
+                    <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                    <th style="text-align: center; vertical-align:middle">Service Request Id</th>
+                    <th style="text-align: center; vertical-align:middle">Customer Name</th>
+                    <th style="text-align: center; vertical-align:middle">Service Request Date and Time</th>
+                    <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
+                    <th style="text-align: center; vertical-align:middle">Service Status</th>
+                    <th style="text-align: center; vertical-align:middle">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set count = namespace(value=1) %}
+                {% for service_request in assigned_service_requests %}
+                <tr>
+                    <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ service_request.sr_customer_name }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
+                    <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
+                    <td style="text-align: center; vertical-align:middle">
+                        {% if service_request.p_blocked == True %}
+                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
+                        {% else %}
+                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
+                        {% endif %}
+                    </td>
+                    {% set count.value = count.value + 1 %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <hr>
+            <h4>No Assigned Service Requests Currently</h4>
+        {% endif %}
+
+
+        <h3 style="margin-top: 50px;">Closed Services</h3>
+        {% if closed_service_requests %}
         <table class="table table-bordered table-hover">
             <thead class="table-success">
               <tr>
@@ -78,28 +116,27 @@
             </thead>
             <tbody>
                 {% set count = namespace(value=0) %}
-                {% for service_request in service_requests %}
+                {% for service_request in closed_service_requests %}
                 <tr>
-                {% if service_request.sr_status == "Closed" %}
+
                 <td style="text-align: center; vertical-align:middle">{{ count.value+1 }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_customer_name }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time.strftime('%d %b %Y %I:%M %p') }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
-                {% if service_feedbacks[count.value] %}
                 <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[count.value].sf_feedback }}</td>
-                {% else %}
-                <td style="text-align: center; vertical-align:middle">No Rating</td>
-                {% endif %}
-        
                 <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[count.value].sf_rating }}</td>
                 {% set count.value = count.value + 1 %}
-                {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <h3>Reject Services</h3>
+        {% else %}
+        <hr>
+        <h4>No Closed Service Requests Currently</h4>
+        {% endif %}
+        <h3 style="margin-top: 50px;">Rejected Services</h3>
+        {% if rejected_service_requests %}
         <table class="table table-bordered table-hover">
             <thead class="table-success">
               <tr>
@@ -112,7 +149,7 @@
             </thead>
             <tbody>
                 {% set count = namespace(value=1) %}
-                {% for service_request in service_requests %}
+                {% for service_request in rejected_service_requests %}
                 <tr>
                 {% if service_request.sr_status == "Rejected" %}
                 <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
@@ -122,11 +159,14 @@
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
                 {% set count.value = count.value + 1 %}
                 {% endif %}
-        
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <hr>
+        <h4>No Rejected Service Requests Currently</h4>
+        {% endif %}
     </div>
 </div>
 

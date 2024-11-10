@@ -24,36 +24,46 @@
       
       <form action="{{ url_for('main.search_from_header') }}" method="get" class="inline" style="margin-right:-100px">
         <div class="form-group row" style="margin-left: 220px; margin-top:-20px">
-        <div class="col-md-4" style="margin-top:0px;margin-left:-190px; size:10%">
-        <label for="parameter"></label>
-        <select class="parameter form-select" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
-        <option value="parameter" selected>Search By...</option>
-        <option value="p_name">Professional Name</option>
-        <option value="p_pincode">Pincode</option>
-        <option value="p_city">City</option>
-        <option value="s_name">Service Name</option>
-        <option value="p_experience">Professional Experience</option>
-        <option value="rating">Professional Rating</option>
-        </select>
+        <div class="clo-md-12 d-flex justify-content">
+          <div class="col-md-4" style="margin-top:0px;margin-left:-230px; size:10%">
+          <label for="parameter"></label>
+          <select class="parameter form-select" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
+          <option value="parameter" selected>Search By...</option>
+          <option value="p_name">Professional Name</option>
+          <option value="p_pincode">Pincode</option>
+          <option value="p_city">City</option>
+          <option value="s_name">Service Name</option>
+          <option value="p_experience">Professional Experience</option>
+          <option value="rating">Professional Rating</option>
+          </select>
+          </div>
+          <div class="col-md-4" style="width: 500px; margin-left:40px">
+          <label for="query"></label>
+          <input type="text" class="form-control" id="query" name="query" placeholder="Search..."  style="border-radius: 18px;">
+          </div>
+          <div class="col-md-1" style="margin-top: 26px;">
+          <button type="submit" class="btn btn-success" style="border-radius: 18px; margin-left:-96px; margin-top:-1px">
+              <i class="bi bi-search"></i> Search
+          </button>
+          </div>
+          </div>
+                </form>
         </div>
-        <div class="col-md-6" style="width: 550px;">
-        <label for="query"></label>
-        <input type="text" class="form-control" id="query" name="query" placeholder="Search..."  style="border-radius: 18px;">
-        </div>
-        <div class="col-md-1" style="margin-top: 26px;">
-        <button type="submit" class="btn btn-success" style="border-radius: 18px; margin-left:-96px; margin-top:-1px">
-            <i class="bi bi-search"></i> Search
-        </button>
-        </div>
-        </div>
-      </form>
 
 
       <div class="navbar-nav ms-auto">
         <b><a class="nav-link" href="{{ url_for('main.home') }}"><i class="bi bi-house-fill"></i> Home</a></b>
         <a class="nav-link" href="/profile"><i class="bi bi-person-circle"></i> <b>Profile</b></a>
-        <b><a class="nav-link" href="{{ url_for('main.cart') }}"><i class="bi bi-cart-fill"></i> Cart</a></b>
         <b><a class="nav-link" href="{{ url_for('main.summary') }}"><i class="bi bi-pie-chart-fill"></i> Summary</a></b>
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <b>More</b>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background: linear-gradient(to bottom right, rgb(17, 157, 106), rgb(0, 133, 133));">
+            <li><a class="dropdown-item" href="{{ url_for('main.cart') }}"><b><i class="bi bi-cart-fill"></i> Cart</b></a></li>
+            <li><a class="dropdown-item" href="{{ url_for('main.service_request_history') }}"><b><i class="bi bi-clock-history"></i> Service Requests</b></a></li>
+          </ul>
+        </div>
         <a class="btn btn-outline-light logout-btn" href="{{ url_for('main.logout')}}"><i class="bi bi-box-arrow-right"></i> <b>Logout</b></a>
       </div>
     </div>

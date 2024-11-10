@@ -1,0 +1,51 @@
+{% extends 'customer_layout.html' %}
+{% block name %}
+    My Service Requests History
+{% endblock %}
+{% block content %}
+{% include 'flashmessage.html'   %}
+    <div class="container" style="height:fit-content;">
+        <h1>My Service Requests History</h1>
+        <hr>
+        {% for transaction in transactions %}
+            <h5>Transaction ID: # {{ transaction.t_id }}</h5>
+            <hr>
+            <table class="table table-bordered table-hover">
+                <thead class="table-success">
+                  <tr>
+                        <th style="text-align: center; vertical-align:middle">Sequence Number</th>
+                        <th style="text-align: center; vertical-align:middle">Service Name</th>
+                        <th style="text-align: center; vertical-align:middle">Service Professional Name</th>
+                        <th style="text-align: center; vertical-align:middle">Professional Email</th>
+                        <th style="text-align: center; vertical-align:middle">Professional Phone Number</th>
+                        <th style="text-align: center; vertical-align:middle">Status</th>
+                        <th style="text-align: center; vertical-align:middle; width:10%">Action</th>
+                        <th style="text-align: center; vertical-align:middle; width:10%">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for service_request in transaction.service_requests %}
+                        <tr>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_service_name }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_service_provider_name }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_service_provider_email }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_service_provider_contact_number }}</td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
+                            <td style="text-align: center; vertical-align:middle">
+                                <a href="{{ url_for('main.service_request_details', sr_id = service_request.sr_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
+                            </td>
+                            <td style="text-align: center; vertical-align:middle">{{ service_request.sr_total }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7" style="text-align: right; vertical-align:middle"><strong>Grand Total</strong></td>
+                        <td style="text-align: center; vertical-align:middle;"><strong>&#8377 {{ transaction.t_total_amount }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        {% endfor %}
+    </div>
+{% endblock %}

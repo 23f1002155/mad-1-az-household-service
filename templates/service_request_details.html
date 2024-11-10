@@ -1,0 +1,75 @@
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
+{% block name %}
+    Service Details
+{% endblock %}
+{% block content %}
+{% include 'flashmessage.html' %}
+    <div class="container" style="height: fit-content;">
+        <h1>Service Details</h1>
+        <hr>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Name:</h5>
+            <p>{{ service_request.sr_service_name }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Provider Name:</h5>
+            <p>{{ service_request.sr_service_provider_name }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Provider Email:</h5>
+            <p>{{ service_request.sr_service_provider_email }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Provider Contact Number:</h5>
+            <p>{{ service_request.sr_service_provider_contact_number }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Status:</h5>
+            <p>{{ service_request.sr_status }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Customer Name:</h5>
+            <p>{{ service_request.sr_customer_name }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Customer Email:</h5>
+            <p>{{ service_request.sr_customer_email }}</p>
+            </div>
+            {% if service_request.sr_status == "Closed" %}
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Rating:</h5>
+            <p>{{ service_feedback.sf_rating }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Review:</h5>
+            <p>{{ service_feedback.sf_feedback }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Request Date and Time:</h5>
+            <p>{{ service_request.transaction.t_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Completion Date and Time:</h5>
+            <p>{{ service_request.sr_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
+            </div>
+            {% else %}
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Request Date and Time:</h5>
+            <p>{{ service_request.sr_date_time }}</p>
+            </div>
+            {% endif %}
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Total Charge:</h5>
+            <p>&#8377 {{ service_request.sr_total }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+               

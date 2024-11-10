@@ -35,6 +35,8 @@ def login():
 
         user = User.query.filter_by(u_name = username).first()
         user_email = User.query.filter_by(u_email = username).first()
+        customer = Customer.query.filter_by(c_user_id = user.u_id).first()
+        service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
 
         if user or user_email:
             if user_email:
@@ -46,12 +48,17 @@ def login():
 
                 elif check_password_hash(user_email.u_passhash, password) and user_email.u_role == 1:
                     session["user_id"] = user_email.u_id
+                    if customer.c_blocked:
+                        flash("Your account has been blocked. Please contact admin.")
+                        
                     flash("Loggen In Successfully as Customer")
                     return redirect(url_for("main.dashboard"))
                 
 
                 elif check_password_hash(user_email.u_passhash, password) and user_email.u_role == 2:
                     session["user_id"] = user_email.u_id
+                    if service_provider.p_blocked:
+                        flash("Your account has been blocked. Please contact admin.")
                     flash("Loggen In Successfully as Professional")
                     return redirect(url_for("main.dashboard"))
                 else:
@@ -64,10 +71,14 @@ def login():
                     return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 1:
                     session["user_id"] = user.u_id
+                    if customer.c_blocked:
+                        flash("Your account has been blocked. Please contact admin.")
                     flash("Loggen In Successfully as Customer")
                     return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 2:
                     session["user_id"] = user.u_id
+                    if service_provider.p_blocked:
+                        flash("Your account has been blocked. Please contact admin.")
                     flash("Loggen In Successfully as Professional")
                     return redirect(url_for("main.dashboard"))
                 else:
@@ -100,6 +111,12 @@ def sign_up_customer():
         if not c_name or not c_email or not c_password or not c_confirm_password or not c_city or not c_pincode or not c_address or not c_fname or not c_lname:
             flash("All fields are required")
             return redirect(url_for("main.sign_up_customer"))
+        
+                
+        if "admin" in c_name.lower():
+            flash("'admin' term can't be used in username.")
+            return redirect(url_for("main.sign_up_customer"))
+
         if " " in c_name:
             flash("Username cannot have spaces")
             return redirect(url_for("main.sign_up_customer"))
@@ -171,6 +188,10 @@ def sign_up_serviceprovider():
             flash("All fields are required")
             return redirect(url_for("main.sign_up_serviceprovider"))
         
+        if "admin" in p_name.lower():
+            flash("'admin' term can't be used in username.")
+            return redirect(url_for("main.sign_up_serviceprovider"))
+
         if " " in p_name:
             flash("Username cannot have spaces")
             return redirect(url_for("main.sign_up_serviceprovider"))
@@ -260,16 +281,14 @@ def dashboard():
     elif user.u_role == 2:
         user = User.query.filter_by(u_id = session["user_id"]).first()
         service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
-        service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id).all()
-        service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id).all()
-        if not service_requests:
-            flash("No Service Requests")
-            return redirect(url_for("main.profile"))
-        if not service_feedbacks:
-            flash("No Feedbacks")
-            return redirect(url_for("main.profile"))
+        requested_service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id, sr_status = "Requested").all()
+        assigned_service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id, sr_status = "Assigned").all()
+        closed_service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id, sr_status = "Closed").all()
+        rejected_service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id, sr_status = "Rejected").all()
+              
+        service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id, ).all()
 
-        return render_template("service_provider_dashboard.html", service_feedbacks = service_feedbacks, service_requests = service_requests, user_role = user.u_role)
+        return render_template("service_provider_dashboard.html", service_feedbacks = service_feedbacks, requested_service_requests = requested_service_requests, assigned_service_requests = assigned_service_requests, closed_service_requests = closed_service_requests, rejected_service_requests = rejected_service_requests,user_role = user.u_role)
 
 
 
@@ -312,6 +331,12 @@ def profile():
                 if new_username:
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
+
+            if "admin" in username.lower():
+                flash("'admin' term can't be used in username.")    
+                return redirect(url_for("main.profile"))
+
+
             user.u_name = username
             db.session.commit()
             flash("Profile Updated Successfully")
@@ -364,6 +389,11 @@ def profile():
                 if new_username:
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
+                
+            if "admin" in username.lower():
+                flash("'admin' term can't be used in username.")            
+                return redirect(url_for("main.profile"))
+
 
             user.u_name = username
             p_user = ServiceProvider.query.filter_by(p_user_id = session["user_id"]).first()
@@ -441,7 +471,8 @@ def search_from_header():
         parameter = request.args.get("parameter")
         query = request.args.get("query").strip()
         service_providers = ServiceProvider.query.filter_by(p_approved = True, p_blocked = False).all()
-
+        carts = Cart.query.filter_by(cart_customer_id = customer.c_id).all()
+        cart_professional_ids = [cart.cart_service_provider_id for cart in carts]
         service_providers_and_ratings = []
         for service_provider in service_providers:
             feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()
@@ -457,6 +488,13 @@ def search_from_header():
         if parameter == "parameter":
             flash("Please select a search by option")
             return redirect(request.referrer)
+        if parameter == "p_pincode" or parameter == "p_experience" or parameter == "rating":
+            try:
+                query = int(query)
+            except:
+                flash("Please enter a valid search term")
+                return redirect(request.referrer)
+            
 
         search_result = []
         if parameter == "p_name":
@@ -473,7 +511,7 @@ def search_from_header():
             search_result = [service_provider for service_provider in service_providers_and_ratings if query <= service_provider[1]]
         if not search_result:
             return render_template("No_Results_Found.html", user_role = user.u_role)
-        return render_template("customer_search_result.html", search_result = search_result, user_role = user.u_role)
+        return render_template("customer_search_result.html", search_result = search_result, user_role = user.u_role, customer = customer,carts = carts, cart_professional_ids = cart_professional_ids)
     elif user.u_role == 2:
         parameter = request.args.get("parameter")
         query = request.args.get("query").strip()
@@ -492,6 +530,13 @@ def search_from_header():
         if query == "-" or query == ":":
             flash("Please enter a valid search term")
             return redirect(request.referrer)
+        
+        if parameter == "sr_id" or parameter == "customer_pimcode":
+            try:
+                query = int(query)
+            except:
+                flash("Please enter a valid search term")
+                return redirect(request.referrer)
 
         
         search_result = []
@@ -545,6 +590,13 @@ def search_from_header():
         if parameter == "parameter":
             flash("Please select a search by option")
             return redirect(request.referrer)
+        
+        if parameter == "sr_id" or parameter == "rating":
+            try:
+                query = int(query)
+            except:
+                flash("Please enter a valid search term")
+                return redirect(request.referrer)
         
         service_search_result = []
         service_provider_search_result = []
@@ -747,22 +799,23 @@ def service_request():
             flash("You are blocked by admin. Please contact admin for further details")
             return redirect(url_for("main.dashboard"))
         t_date_time = request.form.get("sr_date_time")
-        new_t_date_time = datetime.strptime(t_date_time, '%d %B %Y %I:%M %p')
-        new_transaction = Transaction(t_customer_id = sr_customer.c_id, t_date_time = new_t_date_time)
-        db.session.add(new_transaction)
-        db.session.commit()
         carts = Cart.query.filter_by(cart_customer_id = sr_customer.c_id).all()
+        total = sum([(cart.service.s_rate * cart.service.s_time_required) for cart in carts])
+        new_t_date_time = datetime.strptime(t_date_time, '%d %B %Y %I:%M %p')
+        new_transaction = Transaction(t_customer_id = sr_customer.c_id, t_date_time = new_t_date_time, t_total_amount = total)
+        db.session.add(new_transaction)
         for cart in carts:
             sr_service_provider_fullname = cart.service_provider.p_fname + " " + cart.service_provider.p_lname
+            sr_total = cart.service.s_rate * cart.service.s_time_required
             sr_customer_fullname = sr_customer.c_fname + " " + sr_customer.c_lname
-            new_service_request = ServiceRequest( sr_transaction_id = new_transaction.t_id, sr_customer_id = sr_customer.c_id, sr_customer_name = sr_customer.c_name, sr_customer_email = sr_customer.c_email, sr_customer_fullname = sr_customer_fullname, sr_address = sr_customer.c_address, sr_city = sr_customer.c_city, sr_pincode = sr_customer.c_pincode, sr_service_id = cart.service.s_id, sr_service_name = cart.service.s_name, sr_date_time = new_t_date_time, sr_status = "Requested", sr_service_provider_id = cart.service_provider.p_id, sr_service_provider_name = cart.service_provider.p_name, sr_service_provider_fullname = sr_service_provider_fullname, sr_service_provider_email = cart.service_provider.p_email, sr_service_provider_contact_number = cart.service_provider.p_contact_number)
+            new_service_request = ServiceRequest( sr_transaction_id = new_transaction.t_id, sr_total = sr_total, sr_customer_id = sr_customer.c_id, sr_customer_name = sr_customer.c_name, sr_customer_email = sr_customer.c_email, sr_customer_fullname = sr_customer_fullname, sr_address = sr_customer.c_address, sr_city = sr_customer.c_city, sr_pincode = sr_customer.c_pincode, sr_service_id = cart.service.s_id, sr_service_name = cart.service.s_name, sr_date_time = new_t_date_time, sr_status = "Requested", sr_service_provider_id = cart.service_provider.p_id, sr_service_provider_name = cart.service_provider.p_name, sr_service_provider_fullname = sr_service_provider_fullname, sr_service_provider_email = cart.service_provider.p_email, sr_service_provider_contact_number = cart.service_provider.p_contact_number)
             db.session.add(new_service_request)
             db.session.delete(cart)
         db.session.commit()
 
 
         flash("Service Requested Successfully")
-        return redirect(url_for("main.dashboard"))
+        return redirect(url_for("main.service_request_history"))
     elif user.u_role == 2:
         flash("Professional cannot request service")
         return redirect(url_for("main.dashboard"))
@@ -838,15 +891,15 @@ def delete_customer(c_id):
     flash("Customer Deleted Successfully")
     return redirect(url_for("main.dashboard"))
 
-@my_blueprint.route("/service_provider/<int:provider_id>/")
+@my_blueprint.route("/service_provider/<int:p_id>/")
 @requires_login
-def view_service_provider(provider_id):
+def view_service_provider(p_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
-    provider = ServiceProvider.query.filter_by(p_id = provider_id).first()
+    provider = ServiceProvider.query.filter_by(p_id = p_id).first()
     service = Service.query.filter_by(s_id = provider.p_service_id).first()
-    service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = provider_id).all()
-    service_feedback = ServiceFeedback.query.filter_by(sf_service_provider_id = provider_id).all()
-    return render_template("service_provider_profile.html", provider = provider, service = service, service_requests = service_requests, service_feedback = service_feedback, user_role = user.u_role)
+    service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = p_id).all()
+    service_feedback_avg = db.session.query(func.avg(ServiceFeedback.sf_rating).label('overall_rating')).filter_by(sf_service_provider_id = p_id).first()
+    return render_template("service_provider_profile.html", provider = provider, service = service, service_feedback_avg = service_feedback_avg,service_feedbacks = service_feedbacks, user_role = user.u_role)
 
 @my_blueprint.route("/service_request/<int:sr_id>/accept")
 @requires_login
@@ -932,14 +985,14 @@ def professional_list(s_id):
         service = Service.query.filter_by(s_id = s_id).first()
         carts = Cart.query.filter_by(cart_customer_id = customer.c_id).all()
         cart_professional_ids = [cart.cart_service_provider_id for cart in carts]
-        service_providers = ServiceProvider.query.filter_by(p_service_id = s_id, p_approved = True, p_city = customer.c_city).all()
+        service_providers = ServiceProvider.query.filter_by(p_service_id = s_id, p_approved = True).all()
         service_providers_and_ratings = []
         for service_provider in service_providers:
             feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()
             if feedbacks:
                 average_rating = sum(feedback.sf_rating for feedback in feedbacks) / len(feedbacks)
             else:
-                average_rating = "No Ratings"
+                average_rating = 0
             service_providers_and_ratings.append((service_provider, average_rating))
         
         service_providers_and_ratings = sorted(service_providers_and_ratings, key = lambda x: x[1], reverse = True)
@@ -985,7 +1038,7 @@ def add_to_cart(p_id):
         db.session.add(new_cart)
         db.session.commit()
         flash("Service Added to Cart Successfully")
-        return redirect(url_for("main.dashboard"))
+        return redirect(request.referrer)
     elif user.u_role == 2:
         flash("Professionals do not have a cart")
         return redirect(url_for("main.dashboard"))
@@ -1002,16 +1055,16 @@ def remove_from_cart(cart_id):
         cart = Cart.query.filter_by(cart_id = cart_id).first()
         if not cart:
             flash("Service not found in cart")
-            return redirect(url_for("main.cart"))
+            return redirect(request.referrer)
         
         if cart.cart_customer_id != customer.c_id:
             flash("You do not have permission to remove this service from cart")
-            return redirect(url_for("main.cart"))
+            return redirect(request.referrer)
         
         db.session.delete(cart)
         db.session.commit()
         flash("Service Removed from Cart Successfully")
-        return redirect(url_for("main.cart"))
+        return redirect(request.referrer)
     elif user.u_role == 2:
         flash("Professionals do not have a cart")
         return redirect(url_for("main.dashboard"))
@@ -1038,3 +1091,23 @@ def checkout():
     elif user.u_role == 0:
         flash("Admin cannot Checkout")
         return redirect(url_for("main.dashboard"))
+
+@my_blueprint.route("/service_request_hsitory")
+@requires_login
+def service_request_history():
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    if user.u_role == 1:
+        customer = Customer.query.filter_by(c_user_id = user.u_id).first()
+        transactions = Transaction.query.filter_by(t_customer_id = customer.c_id).order_by(Transaction.t_date_time.desc()).all()
+        return render_template("service_request_history.html", transactions = transactions, user_role = user.u_role)
+    
+
+@my_blueprint.route("/service_request_details/<int:sr_id>")
+@requires_login
+def service_request_details(sr_id):
+    user = User.query.filter_by(u_id = session["user_id"]).first()
+    service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+    if service_request.sr_status == "Closed":
+        service_feedback = ServiceFeedback.query.filter_by(sf_service_request_id = sr_id).first()
+        return render_template("service_request_details.html", service_request = service_request, service_feedback = service_feedback, user_role = user.u_role)
+    return render_template("service_request_details.html", service_request = service_request, user_role = user.u_role)

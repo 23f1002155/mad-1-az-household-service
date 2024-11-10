@@ -31,7 +31,7 @@
                     <td style="text-align: center; vertical-align:middle">{{ cart.service.s_time_required }}</td>
                     <td style="text-align: center; vertical-align:middle">&#8377 {{ cart.service.s_rate * cart.service.s_time_required }}</td>
                     <td style="text-align: center; vertical-align:middle">
-                        <a href="{{ url_for('main.remove_from_cart', cart_id= cart.cart_id) }}" class="btn btn-outline-danger">Remove</a>
+                        <a href="{{ url_for('main.remove_from_cart', cart_id= cart.cart_id) }}" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Remove</a>
                     </td>
                     {% set count.value = count.value + 1 %}
                 </tr>
@@ -42,7 +42,7 @@
                     <td colspan="5" style="text-align: center; vertical-align:middle"><b>Grand Total</b></td>
                     <td style="text-align: center; vertical-align:middle"><strong>&#8377 {{ total }}</strong></td>
                     <td style="text-align: center; vertical-align:middle">
-                        <a href="{{ url_for('main.checkout') }}" class="btn btn-outline-success">Check Out</a>
+                        <a href="{{ url_for('main.checkout') }}" class="btn btn-outline-success"><i class="bi bi-bag-check-fill"></i> Check Out</a>
                     </td>
                 </tr>
         </table>
