@@ -35,14 +35,18 @@ def login():
 
         user = User.query.filter_by(u_name = username).first()
         user_email = User.query.filter_by(u_email = username).first()
-        customer = Customer.query.filter_by(c_user_id = user.u_id).first()
-        service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
+        if user:
+            customer = Customer.query.filter_by(c_user_id = user.u_id).first()
+            service_provider = ServiceProvider.query.filter_by(p_user_id = user.u_id).first()
+        elif user_email:
+            customer = Customer.query.filter_by(c_user_id = user_email.u_id).first()
+            service_provider = ServiceProvider.query.filter_by(p_user_id = user_email.u_id).first()
 
         if user or user_email:
             if user_email:
                 if check_password_hash(user_email.u_passhash, password) and user_email.u_role == 0:
                     session["user_id"] = user_email.u_id
-                    flash("Loggen In Successfully as Admin")
+                    flash("Logged In Successfully as Admin")
                     return redirect(url_for("main.dashboard"))
                 
 
@@ -51,7 +55,7 @@ def login():
                     if customer.c_blocked:
                         flash("Your account has been blocked. Please contact admin.")
                         
-                    flash("Loggen In Successfully as Customer")
+                    flash("Logged In Successfully as Customer")
                     return redirect(url_for("main.dashboard"))
                 
 
@@ -59,7 +63,7 @@ def login():
                     session["user_id"] = user_email.u_id
                     if service_provider.p_blocked:
                         flash("Your account has been blocked. Please contact admin.")
-                    flash("Loggen In Successfully as Professional")
+                    flash("Logged In Successfully as Professional")
                     return redirect(url_for("main.dashboard"))
                 else:
                     flash("Invalid Password")
@@ -67,19 +71,19 @@ def login():
             elif user:
                 if check_password_hash(user.u_passhash, password) and user.u_role == 0:
                     session["user_id"] = user.u_id
-                    flash("Loggen In Successfully as Admin")
+                    flash("Logged In Successfully as Admin")
                     return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 1:
                     session["user_id"] = user.u_id
                     if customer.c_blocked:
                         flash("Your account has been blocked. Please contact admin.")
-                    flash("Loggen In Successfully as Customer")
+                    flash("Logged In Successfully as Customer")
                     return redirect(url_for("main.dashboard"))
                 elif check_password_hash(user.u_passhash, password) and user.u_role == 2:
                     session["user_id"] = user.u_id
                     if service_provider.p_blocked:
                         flash("Your account has been blocked. Please contact admin.")
-                    flash("Loggen In Successfully as Professional")
+                    flash("Logged In Successfully as Professional")
                     return redirect(url_for("main.dashboard"))
                 else:
                     flash("Invalid Password")
@@ -257,7 +261,6 @@ def requires_admin(my_fucntion):
     return main_function
 
 from datetime import datetime
-from sqlalchemy.orm import aliased
 
 @my_blueprint.route("/dashboard")
 @requires_login
@@ -269,6 +272,7 @@ def dashboard():
         customers = Customer.query.all()
         categories = ServiceCategory.query.all()
         service_requests = ServiceRequest.query.all()
+        
         return render_template("admin_dashboard.html" , services = services, services_providers = services_providers, service_requests = service_requests, customers = customers, categories = categories, user_role = user.u_role)
     elif user.u_role == 1:
         customer = Customer.query.filter_by(c_user_id = session["user_id"]).first()
@@ -276,7 +280,9 @@ def dashboard():
         service_ids = {request.sr_service_id for request in service_requests}
         services = Service.query.filter(Service.s_id.in_(service_ids)).all()
         service_categories = ServiceCategory.query.all()
-        return render_template("customer_dashboard.html", service_categories = service_categories, service_requests = service_requests, user_role = user.u_role)
+        top_services = Service.query.order_by(func.random()).limit(3).all()
+        all_services = Service.query.all()
+        return render_template("customer_dashboard.html", all_services = all_services, service_categories = service_categories, service_requests = service_requests, user_role = user.u_role, top_services = top_services)
 
     elif user.u_role == 2:
         user = User.query.filter_by(u_id = session["user_id"]).first()
@@ -696,6 +702,13 @@ def edit_service(service_id):
         s_description = request.form.get("s_description")
         s_time_required = request.form.get("s_time_required")
         s_category_id = request.form.get("s_category_id")
+        s_image = request.files.get("s_image")
+        if s_image:
+            s_image.save(f"static/services/{s_image.filename}")
+            service.s_image = s_image.filename
+
+        
+        
 
         if not s_name or not s_rate or not s_description or not s_time_required or not s_category_id:
             flash("All fields are required")

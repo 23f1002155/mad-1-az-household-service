@@ -14,34 +14,45 @@
 {% include 'flashmessage.html'   %} 
 <div class="container" style="height: fit-content;">
     <h1>Edit Service</h1>
-    <div class="col-md-12">
-        <form class="row g-3" method = "POST" action="">
-            <div class="form-group">
+    <div class="row">
+        <form class="row g-3" method = "POST" action="" enctype="multipart/form-data">
+            <div class="col-md-6">
                 <label for="s_name" class="form-label">Service Name:</label>
                 <input type="text" class="form-control" name="s_name" value="{{ service.s_name }}" required>
             </div>
-            <div class="form-group">
+            <div class="col-md-6">
                 <label for="s_description" class="form-label">Description:</label>
                 <input type="text" class="form-control" name="s_description" value="{{ service.s_description }}" required>
             </div>
-            <div class="form-group">
+            <div class="col-md-6">
                 <label for="s_rate" class="form-label">Rate:</label>
                 <input type="text" class="form-control" name="s_rate" value="{{ service.s_rate }}" required>
             </div>
-            <div class="form-group">
+            <div class="col-md-6">
                 <label for="s_time_required" class="form-label">Time Required:</label>
                 <input type="text" class="form-control" name="s_time_required" value="{{ service.s_time_required }}" required>
             </div>
-            <div class="form-group">
+            <div class="col-md-6">
                 <label for="s_category" class="form-label">Category:</label>
                 <select class="form-select" name="s_category_id" required>
-                    <option selected>Choose...</option>
                     {% for service_category in service_categories %}
+                        {% if service_category.sc_id != service.s_category_id %}
                         <option value="{{ service_category.sc_id }}">{{ service_category.sc_name }}</option>
+                        {% else %}
+                        <option value="{{ service_category.sc_id }}" selected>{{ service_category.sc_name }}</option>
+                        {% endif %}
+                        
                     {% endfor %}
                 </select>
-            <button type="submit" class="btn btn-outline-success">Update</button>
+            </div>
+            <div class="col-md-6">
+                <label for="s_image" class="form-label"> Upload Image:</label>
+                <input type="file" class="form-control" name="s_image" required>
+            </div>
+            <div class="col-md-12 d-flex justify-content-center" >
+                <button type="submit" class="btn btn-outline-success" style="margin-bottom: 40px; margin-top:40px">Update</button>
+            </div>
         </form>
-    </div>
+</div>
 </div>
 {% endblock %}

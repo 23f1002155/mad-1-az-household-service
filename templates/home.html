@@ -17,7 +17,11 @@
             {% for service in services %}
               <div class="col-sm-6">
                 <div class="card" style="width: 18rem;">
+                  {% if service.s_image %}
+                    <img src="/static/services/{{ service.s_image }}" class="card-img-top" alt="imagecantbeloaded.jpg">
+                  {% else %}
                   <img src="https://picsum.photos/200?random={{loop.index}}" class="card-img-top" alt="imagecantbeloaded.jpg">
+                  {% endif %}
                   <div class="card-body">
                     <h5 class="card-title">{{ service.s_name }}</h5>
                     <p class="card-text">{{ service.s_description }}</p>
@@ -40,7 +44,11 @@
             {% if service.s_category_id == service_category.sc_id %}
               <div class="col-sm-4" style="margin-bottom: 30px;">
                 <div class="card" style="width:25rem;">
-                  <img src="https://picsum.photos/200?random={{loop.index}}" class="card-img-top" alt="imagecantbeloaded.jpg">
+                {% if service.s_image %}
+                  <img src="/static/services/{{ service.s_image }}" class="card-img-top" alt="imagecantbeloaded.jpg">
+                {% else %}
+                <img src="https://picsum.photos/200?random={{loop.index}}" class="card-img-top" alt="imagecantbeloaded.jpg">
+                {% endif %}
                   <div class="card-body">
                     <h5 class="card-title">{{ service.s_name }}</h5>
                     <p class="card-text">{{ service.s_description }}</p>

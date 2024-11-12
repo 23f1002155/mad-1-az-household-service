@@ -34,6 +34,10 @@
             <p>{{ provider.p_city }}</p>
         </div>
         <div class="col-md-6 mb-3">
+            <h3>Pincode:</h3>
+            <p>{{ provider.p_pincode }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
             <h3>Service Id:</h3>
             <p>{{ provider.p_service_id }}</p>
         </div>
@@ -42,11 +46,12 @@
             <p>{{ service.s_name }}</p>
         </div>
         <div class="col-md-6 mb-3">
+            <h3>Experience:</h3>
+            <p>{{ provider.p_experience }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
             <h3>Overall Rating:</h3>
             <p>{{ service_feedback_avg.overall_rating }}</p>
-        <div class="col-md-6 mb-3" style="margin-left: -660px;">
-            <h3>Pincode:</h3>
-            <p>{{ provider.p_pincode }}</p>
         </div>
         </div>
         {% if service_feedbacks %}

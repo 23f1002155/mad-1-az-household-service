@@ -19,7 +19,7 @@
                         <th style="text-align: center; vertical-align:middle">Professional Email</th>
                         <th style="text-align: center; vertical-align:middle">Professional Phone Number</th>
                         <th style="text-align: center; vertical-align:middle">Status</th>
-                        <th style="text-align: center; vertical-align:middle; width:10%">Action</th>
+                        <th style="text-align: center; vertical-align:middle; width:15%">Action</th>
                         <th style="text-align: center; vertical-align:middle; width:10%">Total</th>
                   </tr>
                 </thead>
@@ -34,6 +34,9 @@
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                             <td style="text-align: center; vertical-align:middle">
                                 <a href="{{ url_for('main.service_request_details', sr_id = service_request.sr_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
+                                {% if service_request.sr_status == "Assigned" %}
+                                <a href="{{ url_for('main.service_completed', sr_id = service_request.sr_id) }}" class="btn btn-outline-success">Close Service</a>                                    
+                                {% endif %}
                             </td>
                             <td style="text-align: center; vertical-align:middle">{{ service_request.sr_total }}</td>
                         </tr>

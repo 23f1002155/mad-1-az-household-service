@@ -62,7 +62,7 @@
             {% else %}
             <div class="col-md-6 mb-3">
             <h5 class="font-weight-bold">Service Request Date and Time:</h5>
-            <p>{{ service_request.sr_date_time }}</p>
+            <p>{{ service_request.sr_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
             </div>
             {% endif %}
             <div class="col-md-6 mb-3">
