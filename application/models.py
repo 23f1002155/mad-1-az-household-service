@@ -71,7 +71,7 @@ class Service(db.Model):
     s_description = db.Column(db.String, nullable = False)
     s_time_required = db.Column(db.REAL, nullable = False)
     s_category_id = db.Column(db.Integer, db.ForeignKey('service_category_database.sc_id'))
-    s_image = db.Column(db.String, nullable = False)
+    s_image = db.Column(db.String, nullable = True)
     category = db.relationship("ServiceCategory", backref = "service_database", lazy = True)
 
 
