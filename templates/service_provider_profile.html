@@ -59,6 +59,11 @@
                 <h2>Service Feedbacks:</h2>
                 <hr style="border-top: 3px solid;">
             </div>
+        {% else %}
+            <div class="col-md-12 mb-3">
+                <h2>No Feedbacks Yet</h2>
+            </div>
+        {% endif %}
                 {% for service_feedback in service_feedbacks %}
                 {% if service_feedback.sf_rating %}
                 <h2 style="margin-bottom: 20px;">Service Request Id: # {{ service_feedback.sf_service_request_id }}</h2>
@@ -85,18 +90,9 @@
                     </div>
                 </div>
                 <hr>
-                {% else %}
-                <div class="col-12" style="height: 60px;">
-                    <h2>No Feedbacks Yet</h2>
-                </div>
                 {% endif %}
                 {% endfor %}
 
-        {% else %}
-            <div class="col-12">
-                <h2>No Feedbacks Yet</h2>
-            </div>
-        {% endif %}
     </div>
 </div>
 

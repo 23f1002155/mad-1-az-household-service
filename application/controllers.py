@@ -489,7 +489,7 @@ def search_from_header():
         for service_provider in service_providers:
             feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()
             if feedbacks:
-                valid_feedbacks = [feedback.sf_rating for feedback in feedbacks if feedback.sf_rating is not None]
+                valid_feedbacks = [feedback.sf_rating for feedback in feedbacks if feedback.sf_rating != 0]
                 average_rating = sum(valid_feedbacks) / len(valid_feedbacks) if valid_feedbacks else 0
                 if average_rating == 0:
                     average_rating = 0
@@ -1052,7 +1052,7 @@ def professional_list(s_id):
         for service_provider in service_providers:
             feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()
             if feedbacks:
-                average_rating = sum(feedback.sf_rating for feedback in feedbacks) / len(feedbacks)
+                average_rating = sum(feedback.sf_rating for feedback in feedbacks if feedback.sf_rating  != 0) / len(feedbacks)
             else:
                 average_rating = 0
             service_providers_and_ratings.append((service_provider, average_rating))
