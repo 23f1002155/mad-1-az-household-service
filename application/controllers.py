@@ -327,9 +327,9 @@ def profile():
         user = User.query.filter_by(u_id = session["user_id"]).first()
         if user.u_role == 0:
             username = request.form.get("username")
+            u_email = request.form.get("email")
 
-
-            if not username:
+            if not username or not u_email:
                 flash("All fields are required")
                 return redirect(url_for("main.profile"))
         
@@ -339,9 +339,15 @@ def profile():
                 if new_username:
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
-
+            if u_email != user.u_email:
+                new_email = User.query.filter_by(u_email = u_email).first()
+                if new_email:
+                    flash("Email already exist")
+                    return redirect(url_for("main.profile"))
+                
 
             user.u_name = username
+            user.u_email = u_email
             db.session.commit()
             flash("Profile Updated Successfully")
             return redirect(url_for("main.profile"))
