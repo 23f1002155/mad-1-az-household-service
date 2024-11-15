@@ -340,10 +340,6 @@ def profile():
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
 
-            if "admin" in username.lower():
-                flash("'admin' term can't be used in username.")    
-                return redirect(url_for("main.profile"))
-
 
             user.u_name = username
             db.session.commit()
@@ -368,6 +364,12 @@ def profile():
                 if new_username:
                     flash("Username already exist")
                     return redirect(url_for("main.profile"))
+            
+            
+            if "admin" in username.lower():
+                flash("'admin' term can't be used in username.")    
+                return redirect(url_for("main.profile"))
+
 
             user.u_name = username
 
