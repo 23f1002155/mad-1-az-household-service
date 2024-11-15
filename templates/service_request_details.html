@@ -59,6 +59,19 @@
             <h5 class="font-weight-bold">Service Completion Date and Time:</h5>
             <p>{{ service_request.sr_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
             </div>
+            {% elif service_request.sr_status == "Rejected" %}
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Reason of Rejection:</h5>
+            <p>{{ service_feedback.sf_feedback }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Request Date and Time:</h5>
+            <p>{{ service_request.transaction.t_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+            <h5 class="font-weight-bold">Service Rejection Date and Time:</h5>
+            <p>{{ service_request.sr_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
+            </div>
             {% else %}
             <div class="col-md-6 mb-3">
             <h5 class="font-weight-bold">Service Request Date and Time:</h5>

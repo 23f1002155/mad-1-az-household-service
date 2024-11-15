@@ -1,0 +1,52 @@
+{% if user_role == 0 %}
+    {% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+    {% extends 'customer_layout.html' %}
+{% else %}
+    {% extends 'service_provider_layout.html' %}
+{% endif %}
+{% block name %}
+    Rejection Reason
+{% endblock %}
+{% block content %}
+{% include 'flashmessage.html'   %}
+<div class="container" style="height: fit-content;">
+    <h1>Rejection of {{ service_request.sr_service_name }} </h1>
+    <div class="w-75" >
+    <div style="margin-top: 50px; margin-right:100px; margin-left:420px;"><h1>Service Request Id: {{ service_request.sr_id }}</h1></div>
+    <form action="" method="POST">
+    <div class="row" style="margin-left: 400px; margin-top:50px">
+        <div class="col-md-6">
+            <b>Professional Name:</b> <p>{{ service_request.sr_service_provider_fullname }}</p>
+        </div>
+        <div class="col-md-6">
+            <b>Professional Email:</b> <p>{{ service_request.sr_service_provider_email }}</p>
+        </div>
+        <div class="col-md-6">
+            <b>Professional Phone:</b> <p>{{ service_request.sr_service_provider_contact_number }}</p>
+        </div>
+        <div class="col-md-6">
+            <b>Customer Name</b> <p>{{ service_request.sr_customer_fullname }}</p>
+        </div>
+        <div class="col-md-6">
+            <b>Customer Email:</b> <p>{{ service_request.sr_customer_email }}</p>
+        </div>
+        <div class="col-md-6">
+            <b>Rejection Date and Time:</b> <p>{{ rejection_date_time }}</p>
+            <input type="hidden" name="rejection_date_time" value="{{ rejection_date_time }}">
+        </div>
+        <div class="col-md-6">
+            <label for="service_rejection" class="form-label">Reason of Rejection:</label>
+            <textarea class="form-control" id="feedback" name="service_rejection" rows="3" required></textarea>
+        </div>
+
+        <div class="col-md-12" style="margin-left: 200px; margin-right:100px; margin-top:50px">
+            <button type="submit" class="btn btn-outline-success">Submit</button>
+        </div>
+     
+    </form>
+    </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@
             <div class="col-md-12">
                 <h1 class="text-center">Search Results</h1>
                 <hr>
-                <div style="height: 500px;">
+                <div>
                     {% if service_search_result %}
                         <table class="table table-bordered table-hover">
                             <thead class="table-success">
@@ -41,16 +41,16 @@
                             <thead class="table-success">
                                 <tr>
                                     <th style="text-align: center; vertical-align:middle; width:1%">Sequence Number</th>
-                                    <th style="text-align: center; vertical-align:middle">Professional Name</th>
-                                    <th style="text-align: center; vertical-align:middle">Email</th>
-                                    <th style="text-align: center; vertical-align:middle">Phone</th>
+                                    <th style="text-align: center; vertical-align:middle; width:5%">Professional Name</th>
+                                    <th style="text-align: center; vertical-align:middle; width:5%">Email</th>
+                                    <th style="text-align: center; vertical-align:middle; width:5%">Phone</th>
                                     <th style="text-align: center; vertical-align:middle">Service</th>
                                     <th style="text-align: center; vertical-align:middle; width:1%">Verification Document</th>
                                     <th style="text-align: center; vertical-align:middle">City</th>
                                     <th style="text-align: center; vertical-align:middle">Overall Rating</th>
                                     <th style="text-align: center; vertical-align:middle">Approved</th>
                                     <th style="text-align: center; vertical-align:middle">Blocked</th>
-                                    <th style="text-align: center; vertical-align:middle">Action</th>
+                                    <th style="text-align: center; vertical-align:middle; width:15%">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,7 +59,7 @@
                                         <td style="text-align: center; vertical-align:middle">{{ loop.index }}</td>
                                         <td style="text-align: center; vertical-align:middle">{{ service_provider.p_name }}</td>
                                         <td style="text-align: center; vertical-align:middle">{{ service_provider.p_email }}</td>
-                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_phone }}</td>
+                                        <td style="text-align: center; vertical-align:middle">{{ service_provider.p_contact_number }}</td>
                                         <td style="text-align: center; vertical-align:middle">{{ service_provider.s_name }}</td>
                                         <td style="text-align: center; vertical-align:middle"><a href="/static/verification/{{ service_provider.p_verification_document }}" style="text-decoration: none;" target="_blank"><i class="bi bi-filetype-pdf"></i> View</a></td>
                                         <td style="text-align: center; vertical-align:middle">{{ service_provider.p_city }}</td>
@@ -146,10 +146,10 @@
                             <tr>
                                 <td style="text-align: center; vertical-align:middle">{{ count.value }}</td>
                                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_id }}</td>
-                                <td style="text-align: center; vertical-align:middle">{{ service_request.service_provider.p_name }}</td>
-                                <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_name }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_service_provider_name }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_customer_name }}</td>
                                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
-                                <td style="text-align: center; vertical-align:middle">{{ service_request.customer.c_city }}, {{ service_request.customer.c_pincode }}</td>
+                                <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
                                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                                 {% set count.value = count.value + 1 %}
                             </tr>

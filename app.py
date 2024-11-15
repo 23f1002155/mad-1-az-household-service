@@ -29,6 +29,7 @@ app.register_blueprint(my_blueprint)
 
 with app.app_context():
     db.create_all()
+    print("Database Created")
     admin = User.query.filter_by(u_role = 0).first()
     if not admin:
         passhash = generate_password_hash("password")
@@ -41,6 +42,13 @@ from application.api import ServiceCategoryAPI
 
 api.add_resource(ServiceCategoryAPI, '/service_categories', '/service_categories/<int:sc_id>')
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    if "user_id" in session:
+        user = User.query.filter_by(u_id = session["user_id"]).first()
+        return render_template("404.html", user_role = user.u_role)
+    return render_template("404.html"), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

@@ -22,10 +22,10 @@
       <a class="nav-link" href="/"><b><h3>HomeHelpr</h3></b></a>
       </span>
       
-      <form action="{{ url_for('main.search_from_header') }}" method="get" class="inline" style="margin-right:-100px">
+      <form action="{{ url_for('main.search_from_header') }}" method="get" class="inline" style="margin-right:-120px">
         <div class="form-group row" style="margin-left: 220px; margin-top:-20px">
         <div class="clo-md-12 d-flex justify-content">
-          <div class="col-md-4" style="margin-top:0px;margin-left:-230px; size:10%">
+          <div class="col-md-4" style="margin-top:0px;margin-left:-255px; size:10%">
           <label for="parameter"></label>
           <select class="parameter form-select" id="parameter" name="parameter" style="border-radius: 18px; margin-left:27px">
           <option value="parameter" selected>Search By...</option>
@@ -52,18 +52,11 @@
 
 
       <div class="navbar-nav ms-auto">
-        <b><a class="nav-link" href="{{ url_for('main.home') }}"><i class="bi bi-house-fill"></i> Home</a></b>
-        <a class="nav-link" href="/profile"><i class="bi bi-person-circle"></i> <b>Profile</b></a>
-        <b><a class="nav-link" href="{{ url_for('main.summary') }}"><i class="bi bi-pie-chart-fill"></i> Summary</a></b>
-        <div class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <b>More</b>
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background: linear-gradient(to bottom right, rgb(17, 157, 106), rgb(0, 133, 133));">
-            <li><a class="dropdown-item" href="{{ url_for('main.cart') }}"><b><i class="bi bi-cart-fill"></i> Cart</b></a></li>
-            <li><a class="dropdown-item" href="{{ url_for('main.service_request_history') }}"><b><i class="bi bi-clock-history"></i> Service Requests</b></a></li>
-          </ul>
-        </div>
+        <b><a class="nav-link" href="{{ url_for('main.home') }}" style="size: 7%%; margin-left:20px"><i class="bi bi-house-fill"></i> Home</a></b>
+        <a class="nav-link" href="/profile" style="size: 10%;"><i class="bi bi-person-circle"></i> <b>Profile</b></a>
+        <b><a class="nav-link" href="{{ url_for('main.summary') }}" style="size: 10%;"><i class="bi bi-pie-chart-fill"></i> Summary</a></b>
+        <a class="nav-link" href="{{ url_for('main.cart') }}" style="size: 10%;"><b><i class="bi bi-cart-fill"></i> Cart</b></a>
+        <a class="nav-link" href="{{ url_for('main.service_request_history') }}" style="size: 10%;"><b><i class="bi bi-clock-history"></i> Service Requests</b></a>
         <a class="btn btn-outline-light logout-btn" href="{{ url_for('main.logout')}}"><i class="bi bi-box-arrow-right"></i> <b>Logout</b></a>
       </div>
     </div>

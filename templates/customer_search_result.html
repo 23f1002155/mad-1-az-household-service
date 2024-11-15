@@ -38,7 +38,12 @@
                         <td style="text-align: center; vertical-align:middle">{{ service_provider[0].p_experience }}</td>
                         <td style="text-align: center; vertical-align:middle"> {{ service_provider[0].p_city }}</td>
                         <td style="text-align: center; vertical-align:middle">{{ service_provider[0].p_pincode }}</td>
-                        <td style="text-align: center; vertical-align:middle">{{ service_provider[1] }}</td>
+                        <td style="text-align: center; vertical-align:middle">                        
+                        {% if service_provider[1] == 0 %}
+                            {{ "No Rating" }}
+                        {% else %}
+                            {{ service_provider[1] }}
+                        {% endif %}
                         <td  style="text-align: center; vertical-align:middle">
                             {% set in_cart = service_provider[0].p_id in cart_professional_ids %}
                             {% set cart_index = cart_professional_ids.index(service_provider[0].p_id) if in_cart else None %}

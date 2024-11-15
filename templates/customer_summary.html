@@ -30,7 +30,7 @@
                     labels: ['Requested', 'Assigned', 'Rejected', 'Closed'],
                     datasets: [{
                         label: 'Total Services',
-                        data: [ {{ total_requested_services }}, {{ total_assigned_services }}, {{ total_rejected_services }}, {{ total_closed_services }} ],
+                        data: [ {{ total_requested_services|safe }}, {{ total_assigned_services|safe }}, {{ total_rejected_services|safe }}, {{ total_closed_services|safe }} ],
                         backgroundColor: [
                             '#FF6384', // Red
                             '#36A2EB', // Blue

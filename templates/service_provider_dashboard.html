@@ -14,8 +14,8 @@
 
 <div class="container" style="height: fit-content;">
     <h1>Professional Dashboard</h1><hr>        
-    <div style="height: 650px;">
-        <h3 style="margin-top: 50px;">Requested Service Requests</h3>
+    <div>
+        <h3 style="margin-top: 50px;"><b>Requested Service Requests</b></h3>
         {% if requested_service_requests %}
         <table class="table table-bordered table-hover">
             <thead class="table-success">
@@ -40,9 +40,9 @@
                     <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                     <td style="text-align: center; vertical-align:middle">
-                        {% if service_request.p_blocked == True %}
-                                <a href="{{ url_for('main.accept_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-success"><i class="bi bi-check-lg"></i> Accept</a>
-                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
+                        {% if service_provider.p_blocked == True %}
+                                <a href="{{ url_for('main.accept_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-secondary"><i class="bi bi-check-lg"></i> Accept</a>
+                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Reject</a>
                         {% else %}
                                 <a href="{{ url_for('main.accept_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-success"><i class="bi bi-check-lg"></i> Accept</a>
                                 <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
@@ -58,7 +58,7 @@
             <h4>No Service Requests Currently</h4>
         {% endif %}
 
-        <h3 style="margin-top: 50px;">Assigned Service Requests</h3>
+        <h3 style="margin-top: 50px;"><b>Assigned Service Requests</b></h3>
         {% if assigned_service_requests %}
         <table class="table table-bordered table-hover">
             <thead class="table-success">
@@ -83,8 +83,9 @@
                     <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
                     <td style="text-align: center; vertical-align:middle">{{ service_request.sr_status }}</td>
                     <td style="text-align: center; vertical-align:middle">
-                        {% if service_request.p_blocked == True %}
-                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
+                        <a href="{{ url_for('main.service_request_details', sr_id = service_request.sr_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
+                        {% if service_provider.p_blocked == True %}
+                                <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Reject</a>
                         {% else %}
                                 <a href="{{ url_for('main.reject_request', sr_id=service_request.sr_id) }}" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Reject</a>
                         {% endif %}
@@ -100,7 +101,7 @@
         {% endif %}
 
 
-        <h3 style="margin-top: 50px;">Closed Services</h3>
+        <h3 style="margin-top: 50px;"><b>Closed Services</b></h3>
         {% if closed_service_requests %}
         <table class="table table-bordered table-hover">
             <thead class="table-success">
@@ -112,6 +113,7 @@
                     <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
                     <th style="text-align: center; vertical-align:middle">Service Feedback</th>
                     <th style="text-align: center; vertical-align:middle">Service Rating</th>
+                    <th style="text-align: center; vertical-align:middle">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -124,8 +126,23 @@
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_customer_name }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time.strftime('%d %b %Y %I:%M %p') }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
-                <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[count.value].sf_feedback }}</td>
-                <td style="text-align: center; vertical-align:middle">{{ service_feedbacks[count.value].sf_rating }}</td>
+                <td style="text-align: center; vertical-align:middle">
+                {% for closed_feedback in closed_feedbacks %}
+                    {% if closed_feedback.sf_service_request_id == service_request.sr_id %}
+                        {{ closed_feedback.sf_feedback }}
+                    {% endif %}
+                {% endfor %}
+                </td>
+                <td style="text-align: center; vertical-align:middle">
+                {% for closed_feedback in closed_feedbacks %}
+                    {% if closed_feedback.sf_service_request_id == service_request.sr_id %}
+                        {{ closed_feedback.sf_rating }}</td>
+                    {% endif %}
+                {% endfor %}
+                </td>
+                <td style="text-align: center; vertical-align:middle">
+                    <a href="{{ url_for('main.service_request_details', sr_id = service_request.sr_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
+                </td>
                 {% set count.value = count.value + 1 %}
                 </tr>
                 {% endfor %}
@@ -135,7 +152,7 @@
         <hr>
         <h4>No Closed Service Requests Currently</h4>
         {% endif %}
-        <h3 style="margin-top: 50px;">Rejected Services</h3>
+        <h3 style="margin-top: 50px; height:fit-content"><b>Rejected Services</b></h3>
         {% if rejected_service_requests %}
         <table class="table table-bordered table-hover">
             <thead class="table-success">
@@ -145,6 +162,8 @@
                     <th style="text-align: center; vertical-align:middle">Customer Name</th>
                     <th style="text-align: center; vertical-align:middle">Service Date and Time</th>
                     <th style="text-align: center; vertical-align:middle">Service City, Pincode</th>
+                    <th style="text-align: center; vertical-align:middle">Rejection Reason</th>
+                    <th style="text-align: center; vertical-align:middle">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -157,6 +176,16 @@
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_customer_name }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_date_time }}</td>
                 <td style="text-align: center; vertical-align:middle">{{ service_request.sr_city }}, {{ service_request.sr_pincode }}</td>
+                <td style="text-align: center; vertical-align:middle">
+                {% for rejected_feedback in rejected_feedbacks %}
+                    {% if rejected_feedback.sf_service_request_id == service_request.sr_id %}
+                        {{ rejected_feedback.sf_feedback }}
+                    {% endif %}
+                {% endfor %}
+                </td>
+                <td style="text-align: center; vertical-align:middle">
+                    <a href="{{ url_for('main.service_request_details', sr_id = service_request.sr_id) }}" class="btn btn-outline-primary"><i class="bi bi-eye-fill"></i> View</a>
+                </td>
                 {% set count.value = count.value + 1 %}
                 {% endif %}
                 </tr>

@@ -21,6 +21,9 @@
       </div>
       <button type="submit" class="btn btn-outline-success">Login</button>
     </form>
+    <br>
+    <p>Don't Have a Account ?</p>
+    <a href ="{{ url_for('main.sign_up_customer') }}">Sign Up As Customer</a> | <a href ="{{ url_for('main.sign_up_serviceprovider') }}">Sign Up As Service Provider</a>
   </div>
 </div>
 {% endblock %}

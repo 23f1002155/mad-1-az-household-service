@@ -21,7 +21,11 @@
         {% for service in services %}
         <div class="col-sm-3">
             <div class="card" style="width: 18rem;">
+                {% if service.s_image %}
+                <img src="/static/services/{{ service.s_image }}" class="card-img-top" alt="imagecantbeloaded.jpg">
+                {% else %}
                 <img src="https://picsum.photos/200?random={{loop.index}}" class="card-img-top" alt="imagecantbeloaded.jpg">
+                {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ service.s_name }}</h5>
                     <p class="card-text">{{ service.s_description }}</p>

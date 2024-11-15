@@ -123,8 +123,8 @@ class ServiceFeedback(db.Model):
     __tablename__ = "service_feedback_database"
     sf_id = db.Column(db.Integer, primary_key = True)
     sf_service_request_id = db.Column(db.Integer, db.ForeignKey('service_request_database.sr_id'))
-    sf_rating = db.Column(db.REAL, nullable = False)
-    sf_feedback = db.Column(db.String, nullable = False)
+    sf_rating = db.Column(db.REAL, nullable = True)
+    sf_feedback = db.Column(db.String, nullable = True)
     sf_customer_id = db.Column(db.Integer, db.ForeignKey('customer_database.c_id'))
     sf_service_provider_id = db.Column(db.Integer, db.ForeignKey("service_provider_database.p_id"))
 

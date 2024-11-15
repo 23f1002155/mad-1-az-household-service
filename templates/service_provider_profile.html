@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-md-6 mb-3">
             <h3>Name:</h3>
-            <p>{{ provider.p_name }}</p>
+            <p>{{ provider.p_fname + " " + provider.p_lname  }}</p>
         </div>
         <div class="col-md-6 mb-3">
             <h3>Email:</h3>
@@ -60,30 +60,36 @@
                 <hr style="border-top: 3px solid;">
             </div>
                 {% for service_feedback in service_feedbacks %}
+                {% if service_feedback.sf_rating %}
                 <h2 style="margin-bottom: 20px;">Service Request Id: # {{ service_feedback.sf_service_request_id }}</h2>
-                    <div class="row">
-                        <div class="group-item d-flex justify-content-between">
-                            <div class="col-md-6 mb-3">
-                                <h3>Customer Name:</h3>
-                                <p>{{ service_feedback.service_request.sr_customer_name }}</p>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <h3>Service Date and Time:</h3>
-                                <p>{{ service_feedback.service_request.sr_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
-                            </div>
+                <div class="row">
+                    <div class="group-item d-flex justify-content-between">
+                        <div class="col-md-6 mb-3">
+                            <h3>Customer Name:</h3>
+                            <p>{{ service_feedback.service_request.sr_customer_name }}</p>
                         </div>
-                        <div class="group-item d-flex justify-content-between">
-                            <div class="col-md-6 mb-3">
-                                <h3>Rating:</h3>
-                                <p>{{ service_feedback.sf_rating }}</p>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <h3>Review:</h3>
-                                <p>{{ service_feedback.sf_feedback }}</p>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <h3>Service Date and Time:</h3>
+                            <p>{{ service_feedback.service_request.sr_date_time.strftime('%d %B %Y %I:%M %p') }}</p>
                         </div>
                     </div>
-                    <hr>
+                    <div class="group-item d-flex justify-content-between">
+                        <div class="col-md-6 mb-3">
+                            <h3>Rating:</h3>
+                            <p>{{ service_feedback.sf_rating }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h3>Review:</h3>
+                            <p>{{ service_feedback.sf_feedback }}</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                {% else %}
+                <div class="col-12" style="height: 60px;">
+                    <h2>No Feedbacks Yet</h2>
+                </div>
+                {% endif %}
                 {% endfor %}
 
         {% else %}

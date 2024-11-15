@@ -292,9 +292,11 @@ def dashboard():
         closed_service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id, sr_status = "Closed").all()
         rejected_service_requests = ServiceRequest.query.filter_by(sr_service_provider_id = service_provider.p_id, sr_status = "Rejected").all()
               
-        service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id, ).all()
+        service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = service_provider.p_id).all()
+        closed_feedbacks = [feedback for feedback in service_feedbacks if feedback.service_request.sr_status == "Closed"]
+        rejected_feedbacks = [feedback for feedback in service_feedbacks if feedback.service_request.sr_status == "Rejected"]
 
-        return render_template("service_provider_dashboard.html", service_feedbacks = service_feedbacks, requested_service_requests = requested_service_requests, assigned_service_requests = assigned_service_requests, closed_service_requests = closed_service_requests, rejected_service_requests = rejected_service_requests,user_role = user.u_role)
+        return render_template("service_provider_dashboard.html", service_provider = service_provider, rejected_feedbacks = rejected_feedbacks, closed_feedbacks = closed_feedbacks, requested_service_requests = requested_service_requests, assigned_service_requests = assigned_service_requests, closed_service_requests = closed_service_requests, rejected_service_requests = rejected_service_requests,user_role = user.u_role)
 
 
 
@@ -461,21 +463,17 @@ def service(s_category_id):
     service_category = ServiceCategory.query.filter_by(sc_id = s_category_id).first()
     return render_template("service.html", services = services, service_category = service_category)
 
-@my_blueprint.route("/search")
-@requires_login
-def search():
-    user = User.query.filter_by(u_id = session["user_id"]).first()
-    if user.u_role == 1:
-        return render_template("customer_search.html", user_role = user.u_role)
 
-@my_blueprint.route("/searches")
+@my_blueprint.route("/search")
 @requires_login
 def search_from_header():
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 1:
         customer = Customer.query.filter_by(c_user_id = user.u_id).first()
         parameter = request.args.get("parameter")
-        query = request.args.get("query").strip()
+        query = request.args.get("query")
+        if query:
+            query = query.strip()
         service_providers = ServiceProvider.query.filter_by(p_approved = True, p_blocked = False).all()
         carts = Cart.query.filter_by(cart_customer_id = customer.c_id).all()
         cart_professional_ids = [cart.cart_service_provider_id for cart in carts]
@@ -483,9 +481,12 @@ def search_from_header():
         for service_provider in service_providers:
             feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id= service_provider.p_id).all()
             if feedbacks:
-                average_rating = sum(feedback.sf_rating for feedback in feedbacks) / len(feedbacks)
+                valid_feedbacks = [feedback.sf_rating for feedback in feedbacks if feedback.sf_rating is not None]
+                average_rating = sum(valid_feedbacks) / len(valid_feedbacks) if valid_feedbacks else 0
+                if average_rating == 0:
+                    average_rating = 0
             else:
-                average_rating = "No Ratings"
+                average_rating = 0
             service_providers_and_ratings.append((service_provider, average_rating))
         
         if not query:
@@ -504,7 +505,7 @@ def search_from_header():
 
         search_result = []
         if parameter == "p_name":
-            search_result = [service_provider for service_provider in service_providers_and_ratings if query.lower() in service_provider[0].p_name.lower()]
+            search_result = [service_provider for service_provider in service_providers_and_ratings if query in service_provider[0].p_name or query.lower() in service_provider[0].p_fname.lower() or query.lower() in service_provider[0].p_lname.lower()]
         elif parameter == "p_city":
             search_result = [service_provider for service_provider in service_providers_and_ratings if query.lower() in service_provider[0].p_city.lower()]
         elif parameter == "p_pincode":
@@ -514,7 +515,7 @@ def search_from_header():
         elif parameter == "s_name":
             search_result = [service_provider for service_provider in service_providers_and_ratings if query.lower() in service_provider[0].service.s_name.lower()]
         elif parameter == "rating":
-            search_result = [service_provider for service_provider in service_providers_and_ratings if query <= service_provider[1]]
+            search_result = [service_provider for service_provider in service_providers_and_ratings if float(query) <= service_provider[1]]
         if not search_result:
             return render_template("No_Results_Found.html", user_role = user.u_role)
         return render_template("customer_search_result.html", search_result = search_result, user_role = user.u_role, customer = customer,carts = carts, cart_professional_ids = cart_professional_ids)
@@ -537,7 +538,7 @@ def search_from_header():
             flash("Please enter a valid search term")
             return redirect(request.referrer)
         
-        if parameter == "sr_id" or parameter == "customer_pimcode":
+        if parameter == "sr_id" or parameter == "customer_pincode":
             try:
                 query = int(query)
             except:
@@ -549,7 +550,7 @@ def search_from_header():
         if parameter == "sr_id":
             search_result = [request for request in service_requests if int(query) == request.sr_id]
         elif parameter == "customer_name":
-            search_result = [request for request in service_requests if query.lower() in request.sr_customer_name.lower()]
+            search_result = [request for request in service_requests if query in request.sr_customer_name or query.lower() in request.sr_customer_fullname.lower()]  
         elif parameter == "customer_city":
             search_result = [request for request in service_requests if query.lower() in request.sr_city.lower()]
         elif parameter == "customer_pincode":
@@ -570,6 +571,8 @@ def search_from_header():
         services = Service.query.all()
         service_providers_avg = db.session.query(
             ServiceProvider.p_name,
+            ServiceProvider.p_fname,
+            ServiceProvider.p_lname,
             ServiceProvider.p_id,
             ServiceProvider.p_city,
             ServiceProvider.p_pincode,
@@ -612,15 +615,15 @@ def search_from_header():
         if parameter == "sc_name" or parameter == "s_name":
             service_search_result = [service for service in services if query.lower() in service.s_name.lower() or query.lower() in service.category.sc_name.lower()]
         elif parameter == "p_name":
-            service_provider_search_result = [service_provider for service_provider in service_providers_avg if query in service_provider.p_name]
+            service_provider_search_result = [service_provider for service_provider in service_providers_avg if query in service_provider.p_name or query.lower() in service_provider.p_fname.lower() or query.lower() in service_provider.p_lname.lower()]
         elif parameter == "c_name":
             customer_search_result = [customer for customer in customers if query.lower() in customer.c_name.lower()]
         elif parameter == "sr_id":
             service_request_search_result = ServiceRequest.query.filter_by(sr_id = int(query)).all()
         elif parameter == "sr_date_time":
-            service_request_search_result = [service_request for service_request in service_requests if query in str(request.sr_date_time)]
+            service_request_search_result = [service_request for service_request in service_requests if query in str(service_request.sr_date_time)]
         elif parameter == "rating":
-            service_provider_search_result = [service_provider for service_provider in service_providers_avg if float(query) <= service_provider.average_rating]
+            service_provider_search_result = [service_provider for service_provider in service_providers_avg if service_provider.average_rating is not None and float(query) <= service_provider.average_rating]
         
         if service_search_result or  service_provider_search_result or  customer_search_result or  service_request_search_result:
             return render_template("admin_search_result.html", service_search_result = service_search_result, service_provider_search_result = service_provider_search_result, customer_search_result = customer_search_result, service_request_search_result = service_request_search_result, user_role = user.u_role)
@@ -675,15 +678,17 @@ def summary():
         }
 
         for feedback in service_feedbacks:
-            if 0 <= feedback.sf_rating == 1:
+            if feedback.sf_rating == None or feedback.sf_rating == 0:
+                continue
+            elif feedback.sf_rating == 1:
                 ratings_count["1"] += 1
-            elif 1 < feedback.sf_rating == 2:
+            elif feedback.sf_rating == 2:
                 ratings_count["2"] += 1
-            elif 2 < feedback.sf_rating == 3:
+            elif feedback.sf_rating == 3:
                 ratings_count["3"] += 1
-            elif 3 < feedback.sf_rating == 4:
+            elif feedback.sf_rating == 4:
                 ratings_count["4"] += 1
-            elif 4 < feedback.sf_rating == 5:
+            elif feedback.sf_rating == 5:
                 ratings_count["5"] += 1
 
         return render_template("service_provider_summary.html", total_service_requests = total_service_requests, total_requested_services = total_requested_services, total_assigned_services = total_assigned_services, total_rejected_services = total_rejected_services, total_closed_services = total_closed_services, ratings_count = ratings_count, user_role = user.u_role)
@@ -908,7 +913,13 @@ def delete_customer(c_id):
 @requires_login
 def view_service_provider(p_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
-    provider = ServiceProvider.query.filter_by(p_id = p_id).first()
+    provider = ServiceProvider.query.filter_by(p_id = p_id, p_approved = True).first()
+    if not provider and user.u_role != 0:
+        flash("Service Provider does not exist")
+        return redirect(url_for("main.dashboard"))
+    if user.u_role == 2:
+        flash("You do not have permission to access this page")
+        return redirect(url_for("main.dashboard"))
     service = Service.query.filter_by(s_id = provider.p_service_id).first()
     service_feedbacks = ServiceFeedback.query.filter_by(sf_service_provider_id = p_id).all()
     service_feedback_avg = db.session.query(func.avg(ServiceFeedback.sf_rating).label('overall_rating')).filter_by(sf_service_provider_id = p_id).first()
@@ -924,6 +935,9 @@ def accept_request(sr_id):
             flash("You are blocked by admin. Please contact admin for further details")
             return redirect(url_for("main.dashboard"))
         service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+        if not service_request:
+            flash("Service Request does not exist")
+            return redirect(url_for("main.dashboard"))
         service_request.sr_status = "Assigned"
         db.session.commit()
         flash("Service Request Approved Successfully")
@@ -932,19 +946,41 @@ def accept_request(sr_id):
         flash("You do not have permission to access this page")
         return redirect(url_for("main.dashboard"))
 
-@my_blueprint.route("/service_request/<int:sr_id>/reject")
+
+@my_blueprint.route("/service_request/<int:sr_id>/reject", methods = ["GET", "POST"])
 @requires_login
 def reject_request(sr_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 2:
-        service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
-        service_request.sr_status = "Rejected"
-        db.session.commit()
-        flash("Service Request Rejected")
-        return redirect(url_for("main.dashboard"))
+        if request.method == "GET":
+            service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+            if not service_request:
+                flash("Service Request does not exist")
+                return redirect(url_for("main.dashboard"))
+            rejection_date_time = datetime.now(tz=None)
+            new_rejection_date_time = rejection_date_time.strftime('%d %b %Y %I:%M %p')
+            return render_template("reject_reason.html", service_request = service_request, rejection_date_time = new_rejection_date_time, user_role = user.u_role)
+        elif request.method == "POST":
+            service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+            sf_service_request_id = sr_id
+            sf_customer_id  = service_request.sr_customer_id
+            sf_service_provider_id = service_request.sr_service_provider_id
+            sf_feedback = request.form.get("service_rejection")
+            sf_rating = 0
+
+            
+            new_service_feedback = ServiceFeedback(sf_service_request_id = sf_service_request_id, sf_rating = sf_rating, sf_customer_id = sf_customer_id, sf_service_provider_id = sf_service_provider_id, sf_feedback = sf_feedback)
+            service_request.sr_status = "Rejected"
+            rejection_date_time_str = request.form.get("rejection_date_time")
+            service_request.sr_date_time = datetime.strptime(rejection_date_time_str, '%d %b %Y %I:%M %p')
+            db.session.add(new_service_feedback)
+            db.session.commit()
+            flash("Service Request Rejected")
+            return redirect(url_for("main.dashboard"))
     else:
         flash("You do not have permission to access this page")
         return redirect(url_for("main.dashboard"))
+
 
 @my_blueprint.route("/service_request/<int:sr_id>/completed", methods = ["GET", "POST"])
 @requires_login
@@ -953,6 +989,9 @@ def service_completed(sr_id):
     if user.u_role == 1:
         if request.method == "GET":
             service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
+            if not service_request:
+                flash("Service Request does not exist")
+                return redirect(url_for("main.dashboard"))
             service_provider = ServiceProvider.query.filter_by(p_id = service_request.sr_service_provider_id).first()
             service = Service.query.filter_by(s_id = service_request.sr_service_id).first()
             completion_date_time = datetime.now(tz=None)
@@ -983,11 +1022,13 @@ def service_completed(sr_id):
         flash("You do not have permission to access this page")
         return redirect(url_for("main.dashboard"))
 
+
 @my_blueprint.route("/blocked")
 @requires_login
 def blocked():
     flash("You have been blocked by the admin. Please contact the admin for further details")
     return redirect(url_for("main.dashboard"))
+
 
 @my_blueprint.route("/professional_list/<int:s_id>")
 @requires_login
@@ -1045,7 +1086,16 @@ def add_to_cart(p_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
     if user.u_role == 1:
         customer = Customer.query.filter_by(c_user_id = user.u_id).first()
+        if customer.c_blocked:
+            flash("You are blocked by admin. Please contact admin for further details")
+            return redirect(request.referrer)
         service_provider = ServiceProvider.query.filter_by(p_id = p_id).first()
+        if service_provider.p_blocked:
+            flash("Service Provider is blocked by admin.")
+            return redirect(request.referrer)
+        if service_provider.p_approved == False:
+            flash("No Service Provider Found")
+            return redirect(url_for("main.dashboard"))
         service = Service.query.filter_by(s_id = service_provider.p_service_id).first()
         new_cart = Cart(cart_customer_id = customer.c_id, cart_service_provider_id = service_provider.p_id, cart_service_id = service.s_id)
         db.session.add(new_cart)
@@ -1120,7 +1170,25 @@ def service_request_history():
 def service_request_details(sr_id):
     user = User.query.filter_by(u_id = session["user_id"]).first()
     service_request = ServiceRequest.query.filter_by(sr_id = sr_id).first()
-    if service_request.sr_status == "Closed":
+    if not service_request:
+        if user.u_role == 0:
+            flash("Service Request Not Found")
+            return redirect(url_for("main.dashboard"))
+        flash("Service Request cannot be accessed")
+        return redirect(url_for("main.dashboard"))
+    customer = Customer.query.filter_by(c_id = service_request.sr_customer_id).first()
+    service_provider = ServiceProvider.query.filter_by(p_id = service_request.sr_service_provider_id).first()
+    if user.u_role == 1:
+        if customer.c_user_id != user.u_id:
+            flash("Service Request cannot be accessed")
+            return redirect(url_for("main.dashboard"))
+    elif user.u_role == 2:
+        if service_provider.p_user_id != user.u_id:
+            flash("Service Request cannot be accessed")
+            return redirect(url_for("main.dashboard"))
+
+    if service_request.sr_status == "Closed" or service_request.sr_status == "Rejected":
         service_feedback = ServiceFeedback.query.filter_by(sf_service_request_id = sr_id).first()
         return render_template("service_request_details.html", service_request = service_request, service_feedback = service_feedback, user_role = user.u_role)
     return render_template("service_request_details.html", service_request = service_request, user_role = user.u_role)
+

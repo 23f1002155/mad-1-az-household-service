@@ -1,0 +1,21 @@
+{% if user_role == 0 %}
+{% extends 'admin_layout.html' %}
+{% elif user_role == 1 %}
+{% extends 'customer_layout.html' %}
+{% elif user_role == 2 %}
+{% extends 'service_provider_layout.html' %}
+{% else %}
+    {% extends 'layout.html' %}
+{% endif %}
+
+
+{% block name %}
+    No Results Found
+{% endblock %}
+
+{% block content %}
+{% include 'flashmessage.html'   %}
+<div class="container" style="height: fit-content;">
+        <h1 style="margin-left: 450px;margin-top:250px; margin-bottom:250px">Error-404: Page Not Found</h1>
+    </div>
+{% endblock %}
