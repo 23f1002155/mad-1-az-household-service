@@ -3,3 +3,4 @@ venv
 .env
 create_professional.py
 db_directory
+HomeHelper.db
